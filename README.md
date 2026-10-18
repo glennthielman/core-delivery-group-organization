@@ -4,6 +4,8 @@ A working structure for a large enterprise in which a team that defines its own 
 
 The documents here use the working terms *core team* and *delivery group*. They describe the same two halves this project names **stewardship** (holds the context, the access and the authority to change the landscape) and **delivery streams** (execute classified, fully defined work).
 
+A delivery stream is defined by how it works, not by who it is. It can be an offshore or external provider, an internal team, or AI development agents; the structure is the same for all of them.
+
 ## The idea
 
 **Definition completeness is the interface, and it is the stewardship team's product.**
@@ -49,7 +51,7 @@ flowchart LR
 ## Design decisions that are easy to undo by accident
 
 1. **Information is pulled, not pushed.** An open channel with a response SLA fails when nothing is volunteered. What is optimised is not round-trip time but silent assumptions.
-2. **The boundary is dispositional, not geographic.** The design sorts by work class, never by location or employer. "Class A" must not become shorthand for "work we send over there"; the structure is worth adopting even if an offshore arrangement ends.
+2. **The boundary is dispositional, not geographic.** The design sorts by work class, never by location or employer. "Class A" must not become shorthand for "work we send over there"; the structure is worth adopting whoever the delivery streams turn out to be, and even if the current arrangement changes.
 3. **The stewardship team does not exist yet and has to be formed.** Four to six people from the team already working this way, with authority to refuse a package, access to production signal and a named owner for classification on day one. The conversation about what it will *not* be measured on happens before it starts.
 
 ## What this is not
@@ -58,7 +60,7 @@ flowchart LR
 - Not better tickets. The product is the landscape and the scaffolding around it.
 - Not more process, and not a transformation programme. It starts on one stream and is judged on that stream's own numbers.
 - Not contingent on anyone else changing. It works with the arrangement that exists.
-- Not anti-agile, and not a position for or against offshoring.
+- Not anti-agile, and not a position on who should do the delivery.
 
 ## Contents
 
@@ -70,7 +72,7 @@ flowchart LR
 | [reference/Taylorism.md](reference/Taylorism.md) | Scientific management: neutral and historical. |
 | [reference/Druckerism.md](reference/Druckerism.md) | Management by objectives and knowledge work: neutral and historical. |
 | [reference/References.md](reference/References.md) | Framings considered and why each was or was not adopted. |
-| [reference/Cases.md](reference/Cases.md) | Publicly verifiable cases of nearshore arrangements outside tech. |
+| [reference/Cases.md](reference/Cases.md) | Publicly verifiable cases of external delivery arrangements outside tech. |
 | [CLAUDE.md](CLAUDE.md) | Project conventions and register for working on these documents. |
 
 ## Reading order
