@@ -74,7 +74,7 @@ Don't say "and today we'll compare them" - just move.
 
 - Not "agile bad, something else good"
 - Not a methodology
-- Not a pitch for or against offshoring
+- Not a pitch for or against any particular delivery group arrangement
 - Not about anyone being lazy or incapable
 
 <br>
@@ -84,7 +84,7 @@ It is about **where the thinking happens**, and what that does to the code.
 <!--
 This slide earns you permission for the back half. Say it plainly.
 
-Especially the fourth bullet - we will talk about offshore delivery later and
+Especially the fourth bullet - we will talk about delivery group work later and
 people will be listening for whether you are going to insult someone. Tell
 them now that you are not, then keep the promise.
 -->
@@ -535,9 +535,9 @@ Monday.
 
 ## The standard arrangement
 
-A **core team** onshore: architects, analysts, senior developers.
+A **core team**: architects, analysts, senior developers.
 
-A **delivery team** offshore or nearshore.
+A **delivery group**.
 
 The core team decides what needs to be done. The delivery team does it.
 
@@ -707,7 +707,7 @@ it.
 ```mermaid
 flowchart LR
     W["Work item"] --> T{"Classify"}
-    T -->|"Class A"| OFF["Routes offshore"]
+    T -->|"Class A"| OFF["Routes to delivery group"]
     T -->|"Class B"| DEF["Core team defines it first"]
     DEF --> T
     T -->|"Class C"| CORE["Core team only<br/>never routes"]
@@ -716,7 +716,7 @@ flowchart LR
 **No exceptions. Not for deadlines. Not for anything.**
 
 <!--
-Every single story you have ever heard about offshore delivery failing traces
+Every single story you have ever heard about delivery group work failing traces
 back to a package that was not Class A when it was sent.
 
 Routing B or C across the boundary fails three ways at once: no usable
@@ -900,7 +900,7 @@ costs more and surfaces later.
 
 ## The capacity ceiling
 
-Offshore throughput is a function of **core-team authoring bandwidth**.
+Delivery group throughput is a function of **core-team authoring bandwidth**.
 
 Below the ceiling: headcount becomes throughput.
 Above the ceiling: headcount becomes **queue** — and pressure to ship packages that aren't Class A.
@@ -1007,7 +1007,7 @@ that in month four rather than year three.
 
 ## Say the costs out loud
 
-- Capacity is **capped**; it doesn't scale by hiring offshore
+- Capacity is **capped**; it doesn't scale by hiring into the delivery group
 - The core team is on the **critical path for everything** — key-person risk
 - The capability gap **widens**, structurally
 - **Nobody moves between the groups** — if that's intended, make it explicit
@@ -1104,7 +1104,7 @@ LIKELY QUESTIONS, and the short answers:
   everything once, up front, in prose. This defines one package at a time, as
   tests, and treats a wrong definition as a defect with a feedback path.
 
-"Why not just make the offshore team autonomous?"
+"Why not just make the delivery group autonomous?"
   Try it. Named individual, bounded area, real decision rights, production
   signal, and a conversation with their employer so it shows up in THEIR
   appraisal. Six months. If it works you've found the lever; if it doesn't

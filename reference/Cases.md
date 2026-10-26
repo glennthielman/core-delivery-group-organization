@@ -1,4 +1,4 @@
-Enterprises outside the technology sector that run a nearshore arrangement, and what can actually be established about how they run it. Belgian or Belgium-anchored where possible.
+Enterprises outside the technology sector that run a delivery group arrangement, and what can actually be established about how they run it. Belgian or Belgium-anchored where possible.
 
 The test applied in [[References]] is whether a framing acts on the problems in [[Working structure - core and delivery group]]. The test applied here is narrower and harder: **what is verifiable**. Every entry below separates what the organisation has published from what is inferred, and marks recruitment copy as recruitment copy. Nothing in this note should reach [[Talk deck - Taylorism and Druckerism]] in a stronger form than it is stated here.
 
@@ -6,17 +6,17 @@ The test applied in [[References]] is whether a framing acts on the problems in 
 
 ## The headline finding
 
-No Belgian enterprise outside the technology sector has published a method for continuously delivering value through a nearshore arrangement. The search for one returns three categories of material, none of which is a method: vendor marketing, press releases announcing that a centre has opened, and job postings.
+No Belgian enterprise outside the technology sector has published a method for continuously delivering value through a delivery group arrangement. The search for one returns three categories of material, none of which is a method: vendor marketing, press releases announcing that a centre has opened, and job postings.
 
 The shape of that absence is itself the argument the talk makes. Every organisation below publishes its **input** figures in detail — headcount, hiring targets, square metres, founding years, cities. Ahold Delhaize announces two hundred and fifty people. KBC announces four hundred IT professionals in Varna. Barry Callebaut announces seven hundred in Łódź. Not one publishes what the money bought. The most candid artefact found in the whole search is a first-anniversary write-up of Ahold Delhaize's Bucharest hub that reports "rapid growth and impactful projects" and names no product, no feature and no measurable outcome.
 
-This is the degraded-Taylorism reading appearing unprompted in the public record: **input is measured precisely because it arrives on an invoice, output is not measured at all, and what is reported in place of output is a count of the input.** The drift is gradient rather than intent — a headcount is trivially countable and an outcome is genuinely hard — but the result is that the only publicly stated measure of a nearshore arrangement is its size.
+This is the degraded-Taylorism reading appearing unprompted in the public record: **input is measured precisely because it arrives on an invoice, output is not measured at all, and what is reported in place of output is a count of the input.** The drift is gradient rather than intent — a headcount is trivially countable and an outcome is genuinely hard — but the result is that the only publicly stated measure of a delivery group arrangement is its size.
 
-Two consequences for the talk. First, this is defensible on stage at no cost, because it cites only what the organisations themselves chose to publish; it makes no claim about whether any of them is succeeding. Second, it supplies a cleaner route into the offshore material than an argument about distance: the question is not whether the arrangement works but whether anyone has established what it produces.
+Two consequences for the talk. First, this is defensible on stage at no cost, because it cites only what the organisations themselves chose to publish; it makes no claim about whether any of them is succeeding. Second, it supplies a cleaner route into the delivery group material than an argument about distance: the question is not whether the arrangement works but whether anyone has established what it produces.
 
 ---
 
-## KBC — Brno, Varna, and a stated nearshoring method
+## KBC — Brno, Varna, and a stated delivery group method
 
 ### What is verifiable
 
@@ -30,7 +30,7 @@ Whether the methodology works, what it contains, how work is defined at the boun
 
 ### What it is good for
 
-This is the closest thing in the search to the structure proposed in [[Working structure - core and delivery group]] existing in the wild. A nearshoring methodology offered as a service to internal clients, with a named team owning it, is recognisably an interface with an owner — the thing section 11 argues has to exist on day one. It is worth citing for the shape of the idea, phrased as *KBC describes* rather than *KBC does*.
+This is the closest thing in the search to the structure proposed in [[Working structure - core and delivery group]] existing in the wild. A delivery group methodology offered as a service to internal clients, with a named team owning it, is recognisably an interface with an owner — the thing section 11 argues has to exist on day one. It is worth citing for the shape of the idea, phrased as *KBC describes* rather than *KBC does*.
 
 ### Sources
 
@@ -109,7 +109,7 @@ One thing, and it is worth having: an industry as far from software as chocolate
 
 ### What is verifiable
 
-Cegeka, a Belgian supplier, consolidated its nearshore activity into a European Delivery Center spanning Romania, Slovakia, the Czech Republic and Moldova, acquiring the Moldovan developer DAS Solutions and basing the cluster on Bucharest and Iași. The Fluvius digital-meter data platform is described as having been built with Cegeka **as a single team**, using an agile approach.
+Cegeka, a Belgian supplier, consolidated its delivery group activity into a European Delivery Center spanning Romania, Slovakia, the Czech Republic and Moldova, acquiring the Moldovan developer DAS Solutions and basing the cluster on Bucharest and Iași. The Fluvius digital-meter data platform is described as having been built with Cegeka **as a single team**, using an agile approach.
 
 ### What is not published
 
@@ -121,7 +121,7 @@ It is the only Belgian material found that describes a *working arrangement* rat
 
 ### Sources
 
-- [Cegeka European Delivery Center](https://outsourcing-today.ro/?p=5758) — Outsourcing Today. The nearshore cluster and its locations.
+- [Cegeka European Delivery Center](https://outsourcing-today.ro/?p=5758) — Outsourcing Today. The delivery group cluster and its locations.
 - [Cegeka strengthens regional presence](https://www.romania-insider.com/index%2ephp/cegeka-takeover-moldova-oct-202) — Romania Insider. The Moldova acquisition.
 - [Cegeka customer cases](https://www.casestudies.com/company/cegeka) — vendor-published. Source of the Fluvius "single team" description.
 
@@ -139,7 +139,7 @@ Unusually for this note, a fair amount *is*: ING's agile reorganisation has been
 
 ### What it is good for
 
-Two uses. As the strongest available example of a non-technology enterprise running nearshore engineering as a single organisation rather than a supplier relationship, and as a caution: ING resolved the problem this structure addresses largely by **owning the people**. A squad with a chapter lead and an end-to-end product mandate is not a delivery group receiving packages; the boundary has been dissolved rather than engineered.
+Two uses. As the strongest available example of a non-technology enterprise running delivery group engineering as a single organisation rather than a supplier relationship, and as a caution: ING resolved the problem this structure addresses largely by **owning the people**. A squad with a chapter lead and an end-to-end product mandate is not a delivery group receiving packages; the boundary has been dissolved rather than engineered.
 
 That distinction is worth making explicitly on stage. It is also close enough to Belgium — ING Belgium — to land in a Brussels room without pretending to be a Belgian case.
 
@@ -182,9 +182,9 @@ One caution that follows directly from [[Two profiles in a software team]] and f
 
 Recorded so the search is not repeated from scratch.
 
-- Any Belgian non-technology enterprise publishing an operating model for nearshore software delivery — definition standards, acceptance criteria, routing rules, anything of the kind set out in [[Working structure - core and delivery group]].
-- Any published outcome measure for a nearshore arrangement at any of the organisations above.
-- Any case study of a Belgian bank or insurer combining a scaled-agile transformation with nearshore delivery. [Belfius' SAFe transformation](https://www.apptio.com/case-study/scaling-agile-belfius-bank/) is documented, but without a nearshore component; Argenta's is attributed only through a consultant biography.
-- Any independent, non-vendor account of a nearshore arrangement succeeding or failing on stated criteria.
+- Any Belgian non-technology enterprise publishing an operating model for delivery group software delivery — definition standards, acceptance criteria, routing rules, anything of the kind set out in [[Working structure - core and delivery group]].
+- Any published outcome measure for a delivery group arrangement at any of the organisations above.
+- Any case study of a Belgian bank or insurer combining a scaled-agile transformation with a delivery group. [Belfius' SAFe transformation](https://www.apptio.com/case-study/scaling-agile-belfius-bank/) is documented, but without a delivery group component; Argenta's is attributed only through a consultant biography.
+- Any independent, non-vendor account of a delivery group arrangement succeeding or failing on stated criteria.
 
 The first and fourth are the ones worth re-checking if a Belgian enterprise ever publishes a technology-organisation write-up. Everything else here is unlikely to change.

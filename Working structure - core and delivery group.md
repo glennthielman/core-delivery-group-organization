@@ -2,7 +2,7 @@
 
 A working structure for a large enterprise that runs a [[Druckerism]]-capable core team alongside a delivery group that operates on [[Taylorism]] lines, where the application landscape has to keep evolving at the same time.
 
-The delivery group is typically offshore, nearshore or AI, but the structure does not depend on that — see "Where the boundary actually falls" below.
+The delivery group is typically an external provider, an internal team or AI, but the structure does not depend on that — see "Where the boundary actually falls" below.
 
 The first action it asks for is not a change at all: record a baseline of how the current arrangement behaves, before anything is announced. Section 7 covers it, and it is step zero in section 14.
 
@@ -53,7 +53,7 @@ Everything else here is a consequence of that principle:
 flowchart LR
     DEMAND["Incoming demand"] --> TRIAGE{{"Classification"}}
 
-    subgraph CORE["Core team - onshore"]
+    subgraph CORE["Core team"]
         TRIAGE
         LAND["Landscape evolution"]
         AUTH["Package authoring"]
@@ -87,14 +87,14 @@ flowchart LR
 
 The language throughout is "core team" and "delivery group", which suggests two locations. In practice the split is rarely geographic and usually not clean.
 
-The same organisation typically contains people actively pushing for broader ownership and people waiting for the next ticket who do not participate in meetings — and both groups sit onshore, sometimes in the same room. Meanwhile some of the most engaged people in the arrangement may be in the delivery group.
+The same organisation typically contains people actively pushing for broader ownership and people waiting for the next ticket who do not participate in meetings — and both groups sit in the same country, sometimes in the same room. Meanwhile some of the most engaged people in the arrangement may be in the delivery group.
 
 **The design sorts by work class, not by location or by employer.** A Class A package goes to whoever is available to execute it; Class C work stays with whoever holds the context and the authority. Someone sitting twenty metres away who prefers bounded work with a clear path is served by exactly the same structure, and is served *well* by it — a complete package is a better experience than an ambiguous one for anyone who works that way.
 
 Two consequences worth stating:
 
 - Do not let the routing rule become a statement about a location or a supplier. The moment "Class A work" is shorthand for "work we send over there", the classification stops being about the work and becomes about people, and the conflict the structure exists to prevent arrives by a different door.
-- The structure is worth adopting even if the offshore arrangement ends tomorrow. Most of it is just definition discipline, and the parts that are not are architecture work worth doing anyway.
+- The structure is worth adopting even if the delivery group arrangement ends tomorrow. Most of it is just definition discipline, and the parts that are not are architecture work worth doing anyway.
 
 ## 1. Work classification and the routing rule
 
@@ -452,7 +452,7 @@ It is also the cheapest step in the document. Everything below comes from data t
 - **Retrospective.** A fixed window in the past — the last six sprints, or the last full quarter. The same window for every measure.
 - **Recorded before it is announced.** Numbers that people know are being watched start moving for the wrong reasons.
 - **Aggregated by stream or team, never by person.** This measures the interface, not individuals.
-- **Never cut by location or employer.** The moment the baseline shows "onshore versus offshore" it becomes the finger-pointing it is meant to replace, and it measures the wrong boundary, because the structure sorts by work class — see "Where the boundary actually falls". The authoring ratio in section 9 is not an exception to this: it splits by role, which is a property of the work, not by where someone sits or who employs them.
+- **Never cut by location or employer.** The moment the baseline shows a split by location it becomes the finger-pointing it is meant to replace, and it measures the wrong boundary, because the structure sorts by work class — see "Where the boundary actually falls". The authoring ratio in section 9 is not an exception to this: it splits by role, which is a property of the work, not by where someone sits or who employs them.
 - **Where the data is missing, the gap is the finding.** Tracker hygiene will be uneven and some measures will be unobtainable. Record what could not be measured and why, and proceed. If only a fifth of defects can be traced to the work that caused them, that is not a failed measurement — it is the thesis of this document expressed as a number.
 - **Method published alongside the numbers.** The queries, the window and the known gaps. A number without its method is an opinion with a decimal point.
 

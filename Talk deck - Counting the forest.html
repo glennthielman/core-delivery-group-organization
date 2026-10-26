@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Counting the forest, by measuring the trees</title>
+<!--
+TALK: "Counting the forest, by measuring the trees"
+Target: 45 minutes speaking + 5 minutes Q&A. Audience: software developers.
+
+TIMING ANCHORS
+  00:00  Opening                                   3 min   slides 1-2
+  00:03  Part 1  Two profiles                     16 min   slides 3-19
+  00:19  Part 2  The working structure            24 min   slides 20-49
+  00:43  Close                                     2 min   slides 50-51
+  00:45  Q&A                                       5 min
+
+CONTROLS
+  Right / Space / PageDown   next (reveals build steps first)
+  Left / PageUp              previous
+  Home / End                 first / last
+  O                          overview grid        N   speaker notes
+  F                          fullscreen           ?   hint
+  Print (Cmd/Ctrl+P)         one slide per page, all builds visible
+
+REGISTER (from CLAUDE.md): structural, never cultural. Both profiles carry strengths and costs.
+Disposition is preference, not type. Neutral voice. The boundary sorts by work class, never
+by location or employer. A delivery stream can be an external provider, an
+internal team or AI development agents.
+-->
+<style>
+:root{
+  --paper:#f5f1e8; --paper2:#ece6d6; --ink:#1d2622; --muted:#5d6a64; --line:#d6cfbc;
+  --dark:#0f2019; --dark2:#173226; --leaf:#4f9a78; --leaf-l:#bfdccb;
+  --tay:#34568b; --tay-bg:#e5ebf5; --dru:#b9622f; --dru-bg:#f6e7dc;
+  --core:#2a7a58; --core-bg:#dcebe2; --del:#56667e; --del-bg:#e2e6ee;
+  --a:#a9d3bb; --b:#4f9a78; --c:#1f5a43;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0f0d;overflow:hidden;font-family:var(--sans);color:var(--ink)}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;background:var(--paper);overflow:hidden}
+.slide{position:absolute;inset:0;padding:84px 110px 96px;display:none;flex-direction:column;background:var(--paper)}
+.slide.active{display:flex}
+.slide.dark{background:var(--dark);color:#eaf2ec}
+.slide.dark2{background:var(--dark2);color:#eaf2ec}
+
+/* chrome */
+.footer{position:absolute;left:0;right:0;bottom:0;height:56px;padding:0 110px;display:flex;align-items:center;justify-content:space-between;font-size:20px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+.dark .footer,.dark2 .footer{color:#8fa89a}
+.progress{position:fixed;left:0;top:0;height:5px;background:var(--leaf);z-index:20;transition:width .25s}
+#hint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:30;background:rgba(0,0,0,.72);color:#fff;font:14px var(--sans);padding:8px 16px;border-radius:20px;transition:opacity .6s;pointer-events:none}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(10,14,12,.94);color:#e8efe9;font:18px/1.5 var(--sans);padding:16px 32px 20px;z-index:25;display:none;border-top:2px solid var(--leaf)}
+#notes.on{display:block}
+#notes b{color:var(--leaf-l)}
+
+/* type */
+.kicker{font-size:22px;letter-spacing:.16em;text-transform:uppercase;color:var(--core);font-weight:600;margin-bottom:18px}
+.dark .kicker,.dark2 .kicker{color:var(--leaf-l)}
+h1{font-family:var(--serif);font-weight:600;font-size:116px;line-height:1.02;letter-spacing:-.01em}
+h2{font-family:var(--serif);font-weight:600;font-size:60px;line-height:1.1;margin-bottom:30px;max-width:1600px}
+h3{font-family:var(--serif);font-weight:600;font-size:36px;line-height:1.15;margin-bottom:12px}
+p{font-size:32px;line-height:1.38}
+.lead{font-size:40px;line-height:1.32}
+.small{font-size:25px;line-height:1.38}
+.muted{color:var(--muted)}
+.dark .muted,.dark2 .muted{color:#9fb5a8}
+.em{color:var(--core);font-weight:600}
+.dark .em,.dark2 .em{color:var(--leaf-l)}
+ul.list{list-style:none;display:flex;flex-direction:column;gap:14px}
+ul.list li{font-size:30px;line-height:1.3;padding-left:34px;position:relative}
+ul.list li::before{content:"";position:absolute;left:4px;top:.55em;width:12px;height:12px;border-radius:50%;background:var(--leaf)}
+ul.list.sm li{font-size:26px;gap:0}
+ul.list.sm{gap:11px}
+ul.list.sm li::before{width:10px;height:10px}
+.tayc ul.list li::before{background:var(--tay)}
+.druc ul.list li::before{background:var(--dru)}
+.spacer{flex:1}
+.row{display:flex;gap:36px}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.cols4{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.center{align-items:center;justify-content:center;text-align:center}
+code,.mono{font-family:var(--mono)}
+
+/* cards */
+.card{background:#fff;border:2px solid var(--line);border-radius:16px;padding:28px 30px}
+.card.t{background:var(--tay-bg);border-color:#b8c6e0}
+.card.d{background:var(--dru-bg);border-color:#e7c3aa}
+.card.core{background:var(--core-bg);border-color:#b2d2c0}
+.card.del{background:var(--del-bg);border-color:#bcc4d2}
+.card.flat{background:transparent;border-style:dashed}
+.dark .card,.dark2 .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
+.card h3{font-size:34px}
+.card p,.card li{font-size:27px}
+.tag{display:inline-block;font-size:20px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;border-radius:30px;margin-bottom:14px}
+.tag.t{background:var(--tay);color:#fff}
+.tag.d{background:var(--dru);color:#fff}
+.tag.core{background:var(--core);color:#fff}
+.tag.del{background:var(--del);color:#fff}
+.tag.grey{background:#8a9690;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{font-size:25px;padding:8px 20px;border-radius:30px;background:#fff;border:2px solid var(--line)}
+.chips.t .chip{background:var(--tay-bg);border-color:#b8c6e0;color:#233e69}
+.chips.d .chip{background:var(--dru-bg);border-color:#e7c3aa;color:#7c3e17}
+.chips.t .chip.x,.chips.d .chip.x{opacity:.75;font-style:italic}
+.big-num{font-family:var(--serif);font-size:96px;line-height:1;font-weight:600}
+blockquote{font-family:var(--serif);font-size:46px;line-height:1.28;border-left:8px solid var(--leaf);padding:6px 0 6px 40px}
+.dark blockquote,.dark2 blockquote{border-color:var(--leaf-l)}
+
+/* tables */
+table{border-collapse:collapse;width:100%}
+th,td{padding:14px 20px;text-align:left;font-size:26px;line-height:1.28;vertical-align:top;border-bottom:2px solid var(--line)}
+th{font-size:22px;letter-spacing:.1em;text-transform:uppercase;color:#fff}
+th.t{background:var(--tay)} th.d{background:var(--dru)} th.n{background:var(--ink)} th.core{background:var(--core)} th.del{background:var(--del)}
+td.k{font-weight:600;width:25%}
+td.t{background:var(--tay-bg)} td.d{background:var(--dru-bg)}
+tr.hi td{background:#fff3c9}
+
+/* code */
+pre{font-family:var(--mono);font-size:25px;line-height:1.5;background:#14221c;color:#e6efe8;border-radius:14px;padding:26px 32px;white-space:pre;overflow:hidden}
+pre .k{color:#8fd1ae} pre .a{color:#e8c47a} pre .s{color:#f0a98a} pre .c{color:#7d948a} pre .t{color:#9cc3f0}
+
+/* build steps */
+.step{opacity:0;transform:translateY(14px);transition:opacity .35s,transform .35s}
+.step.on{opacity:1;transform:none}
+
+/* diagram atoms */
+.node{border-radius:14px;padding:18px 24px;font-size:26px;line-height:1.25;border:2px solid var(--line);background:#fff;text-align:center}
+.node.core{background:var(--core-bg);border-color:var(--core)}
+.node.del{background:var(--del-bg);border-color:var(--del)}
+.node.bad{background:#f4e0dc;border-color:#b15a4b}
+.node.good{background:#dcebe2;border-color:var(--core)}
+.node.dim{background:transparent;border-style:dashed;color:var(--muted)}
+.arrow{font-size:36px;color:var(--muted);align-self:center;line-height:1}
+.chain{display:flex;align-items:stretch;gap:14px}
+.chain .node{flex:1;display:flex;align-items:center;justify-content:center}
+.pill-A,.pill-B,.pill-C{display:inline-block;font-weight:700;border-radius:10px;padding:2px 14px}
+.pill-A{background:var(--a);color:#14382a} .pill-B{background:var(--b);color:#fff} .pill-C{background:var(--c);color:#fff}
+svg text{font-family:var(--sans)}
+
+/* section slides */
+.section{justify-content:center}
+.section .num{font-family:var(--serif);font-size:200px;line-height:.9;color:var(--leaf);opacity:.9}
+.field{position:absolute;left:0;right:0;bottom:0;height:380px;display:flex;align-items:flex-end;gap:6px;padding:0 20px;opacity:.9;pointer-events:none}
+.field svg{flex:none;fill:currentColor}
+.slide>:not(.field){position:relative;z-index:1}
+.slide>.field{z-index:0}
+.slide>.notes{display:none}
+
+/* overview + print */
+body.overview{overflow:auto;background:#1b211e}
+body.overview .stage{position:static;transform:none!important;width:auto;height:auto;background:transparent;display:grid;grid-template-columns:repeat(auto-fill,384px);gap:22px;padding:26px;justify-content:center;overflow:visible}
+body.overview .slide{position:relative;display:flex;zoom:.2;width:1920px;height:1080px;cursor:pointer;outline:8px solid transparent}
+body.overview .slide.active{outline-color:var(--leaf)}
+body.overview .step{opacity:1;transform:none}
+body.overview .footer{display:none}
+@media print{
+  @page{size:1920px 1080px;margin:0}
+  html,body{overflow:visible;height:auto;background:#fff}
+  .stage{position:static;transform:none!important;width:1920px;height:auto;overflow:visible}
+  .slide{position:relative;display:flex!important;height:1080px;page-break-after:always;break-after:page}
+  .step{opacity:1!important;transform:none!important}
+  .progress,#hint,#notes{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div id="hint">← → navigate &nbsp;·&nbsp; O overview &nbsp;·&nbsp; N notes &nbsp;·&nbsp; F fullscreen</div>
+<div id="notes"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="tree" viewBox="0 0 20 30"><polygon points="10,0 18,15 2,15"/><polygon points="10,7 20,25 0,25"/><rect x="8.4" y="25" width="3.2" height="5"/></symbol>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5d6a64"/></marker>
+    <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2a7a58"/></marker>
+  </defs>
+</svg>
+
+<div class="stage" id="stage">
+
+<!-- ============ 1. TITLE ============ -->
+<section class="slide dark section" data-part="Opening">
+  <div class="kicker">A talk for people who build software inside large organisations</div>
+  <h1>Counting the forest,<br>by measuring the trees</h1>
+  <p class="lead muted" style="margin-top:40px;max-width:1300px">Two ways a software team can run, and a working structure for when both have to share one organisation.</p>
+  <div class="field" data-trees="46" data-seed="3" style="color:#1c4a37"></div>
+  <aside class="notes">Open cold, no agenda slide. The title is the whole argument in one line: a precise count of every tree is not a view of the forest. Hold the title for a beat before moving on.</aside>
+</section>
+
+<!-- ============ 2. THE TITLE EXPLAINED ============ -->
+<section class="slide" data-part="Opening">
+  <div class="kicker">The title</div>
+  <h2>Every tree is counted. The forest is inferred.</h2>
+  <div class="cols2" style="flex:1;align-items:stretch">
+    <div class="card" style="display:flex;flex-direction:column;gap:20px">
+      <span class="tag grey">The trees</span>
+      <div class="chips"><span class="chip">hours booked</span><span class="chip">headcount</span><span class="chip">day rates</span><span class="chip">utilisation</span><span class="chip">story points</span><span class="chip">tickets closed</span></div>
+      <p class="small muted">Measured precisely, reported on a schedule, reconciled monthly.</p>
+      <div class="field-inline" data-trees="28" data-seed="9" style="color:var(--leaf);display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:auto"></div>
+    </div>
+    <div class="card flat step" style="display:flex;flex-direction:column;gap:20px">
+      <span class="tag grey">The forest</span>
+      <p class="lead">What did all of it change, for anyone outside the team?</p>
+      <p class="small muted">Not measured. Assumed from the trees.</p>
+      <div style="font-family:var(--serif);font-size:150px;line-height:1;color:var(--line);margin-top:auto;text-align:right">?</div>
+    </div>
+  </div>
+  <p class="step" style="margin-top:28px">The first half of this talk names how that happens. The second half is a structure that measures the forest.</p>
+  <aside class="notes">The metaphor is used sparingly from here. Trees are the units that arrive on invoices and in trackers. The forest is the outcome. Nothing here is a criticism of counting; the question is what the count is mistaken for.</aside>
+</section>
+
+<!-- ============ 3. PART 1 ============ -->
+<section class="slide dark section" data-part="Part 1 · Two profiles">
+  <div class="num">1</div>
+  <h1 style="font-size:96px">Two profiles</h1>
+  <p class="lead muted" style="margin-top:28px;max-width:1200px">What each looks like when it is already running inside a team, observed in a week.</p>
+  <aside class="notes">Part 1 runs roughly sixteen minutes. Goal: recognition. The audience should be able to name what is happening to them, and nobody should leave feeling that one profile is the villain.</aside>
+</section>
+
+<!-- ============ 4. THE VANTAGE POINT ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">Vantage point</div>
+  <h2>An outsider, five days, no questions about beliefs</h2>
+  <div class="cols2" style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <p class="lead">Allowed to watch:</p>
+      <ul class="list">
+        <li>the board</li>
+        <li>the meetings</li>
+        <li>the chat</li>
+        <li>the way people talk about each other</li>
+      </ul>
+      <p class="lead step" style="margin-top:20px">Not allowed to ask what the team believes about management.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div class="card step"><h3>Neither profile is a job title or a methodology</h3><p>Nobody in either team describes themselves in these terms.</p></div>
+      <div class="card step"><h3>Both can wear the same framework</h3><p>Same ceremonies, same tooling, same board, same words.</p></div>
+    </div>
+  </div>
+  <aside class="notes">This framing keeps the discussion on observable structure rather than on intentions or beliefs. It also pre-empts the objection that a team "does Scrum properly": both profiles can.</aside>
+</section>
+
+<!-- ============ 5. PROFILE ONE ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker" style="color:var(--tay)">Profile one</div>
+  <h2>The Taylorist team: a stage in a pipeline</h2>
+  <div class="cols2 tayc" style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>Shape</h3>
+      <ul class="list">
+        <li>Boundaries drawn around <b>activity types</b>: the API team, the build squad, the test function</li>
+        <li>Asked who the customer is, the answer names an <b>internal party</b></li>
+        <li>Each function has its own queue and manager</li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>How work arrives</h3>
+      <ul class="list">
+        <li><b>Pre-decomposed.</b> The problem has already become a solution, and the ticket describes the solution</li>
+        <li>"Add field X to endpoint Y", not "the customer needs to see Z"</li>
+        <li>Refinement exists to make work <b>ready for execution</b> without needing context</li>
+        <li>The ticket is written by one person, executed by another, and the writer is more senior</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">Every item here is observable in a week. The question "what is the task?" was answered off-stage, before the work arrived. What remains on the team's side is "how long will it take?"</aside>
+</section>
+
+<!-- ============ 6. TAYLORIST: MEASUREMENT + VOCAB ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker" style="color:var(--tay)">Profile one</div>
+  <h2>What is counted, and how it sounds</h2>
+  <div class="cols2" style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>Measurement</h3>
+      <ul class="list tayc sm">
+        <li>Counts <b>units per period</b>: points, tickets, pull requests, commits</li>
+        <li>Estimates compared to actuals; the gap is treated as <b>estimation accuracy</b>, not as information about the work</li>
+        <li>A chart goes up and to the right and has <b>nothing to do with anything outside the team</b></li>
+        <li><b>Utilisation</b> is tracked; idle time is waste</li>
+        <li>Measurement flows <b>upward</b>, for control</li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>Vocabulary</h3>
+      <div class="chips t">
+        <span class="chip">resource</span><span class="chip">FTE</span><span class="chip">headcount</span><span class="chip">velocity</span><span class="chip">utilisation</span><span class="chip">burn-down</span><span class="chip">hand-off</span><span class="chip">sign-off</span><span class="chip">gate</span><span class="chip">ready</span><span class="chip">in scope / out of scope</span><span class="chip">change request</span><span class="chip">"the business"</span>
+      </div>
+      <p class="small muted" style="margin-top:6px">Heard in the corridor:</p>
+      <div class="chips t"><span class="chip x">"just implement the ticket"</span><span class="chip x">"that is not my ticket"</span><span class="chip x">"who is assigned?"</span></div>
+    </div>
+  </div>
+  <aside class="notes">Vocabulary gives it away fastest. Note the pattern of people referred to by count and skill class ("two more mediors") rather than by name and strength.</aside>
+</section>
+
+<!-- ============ 7. TAYLORIST: STRENGTHS & COSTS ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker" style="color:var(--tay)">Profile one</div>
+  <h2>Strengths and costs</h2>
+  <div class="cols2" style="flex:1">
+    <div class="card t" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag t">Strengths</span>
+      <p class="lead" style="font-size:36px"><b>It does not depend on exceptional people.</b> That is why organisations at scale converge on it.</p>
+      <ul class="list tayc sm">
+        <li><b>Predictable:</b> standard work, comparable output, plannable</li>
+        <li><b>Fast to staff:</b> the method lives in artefacts, so a newcomer is productive without years of context</li>
+        <li><b>Clear boundaries:</b> everyone knows what is theirs</li>
+        <li><b>A genuine fit</b> for people whose best work is a bounded problem with a clear path</li>
+      </ul>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag grey">Costs</span>
+      <ul class="list tayc sm" style="margin-top:8px">
+        <li>The outcome depends on the <b>quality of a definition made upstream</b>, by someone who is not doing the work</li>
+        <li>Context is lost at each hand-off; the people closest to the code have the <b>least say</b></li>
+        <li>Deviation needs permission; improvement arrives as a <b>programme</b></li>
+        <li>Without an output measure, shortfalls stay <b>invisible until undeniable</b></li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">The decisive strength is stated plainly, because it is true and because it explains the gravitational pull. A structure that needs no heroes survives turnover, scale and a bad quarter.</aside>
+</section>
+
+<!-- ============ 8. PROFILE TWO ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker" style="color:var(--dru)">Profile two</div>
+  <h2>The Druckerian team: owner of an outcome</h2>
+  <div class="cols2 druc" style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>Shape</h3>
+      <ul class="list">
+        <li>Organised around <b>an outcome someone outside the organisation experiences</b></li>
+        <li>Small and mixed: the disciplines needed to go from problem to running software</li>
+        <li>Nobody's job title fully predicts what they will do this week</li>
+        <li>People can name the customer, and some have spoken to one recently</li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>How work arrives</h3>
+      <ul class="list">
+        <li>As <b>a problem or a desired outcome</b>; how is open when work is picked up</li>
+        <li>The team is expected to come back and say "this is not worth doing" or "the real problem is elsewhere"</li>
+        <li><b>The team defines the task</b>, out loud, about its own work</li>
+        <li>Method sits with the people doing the work</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">Mirror of slide 5. Drucker's first question, "what is the task?", is asked by the team about its own work. Seniority shows up as more context and better questions, not as the right to specify.</aside>
+</section>
+
+<!-- ============ 9. DRUCKERIAN: MEASUREMENT + VOCAB ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker" style="color:var(--dru)">Profile two</div>
+  <h2>What is counted, and how it sounds</h2>
+  <div class="cols2" style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>Measurement</h3>
+      <ul class="list druc sm">
+        <li>Counts <b>what happened outside the team</b>: users, errors in production, latency, adoption, support load, time from idea to live</li>
+        <li>Measurement flows <b>to the doer</b>, for self-correction, fast enough to act on</li>
+        <li>Forecasts exist where a date matters, and are revised without blame</li>
+        <li>Nobody tracks individual utilisation; slack is unremarkable</li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h3>Vocabulary</h3>
+      <div class="chips d">
+        <span class="chip">outcome</span><span class="chip">customer</span><span class="chip">the problem we are solving</span><span class="chip">contribution</span><span class="chip">ownership</span><span class="chip">we decided</span><span class="chip">we were wrong about</span><span class="chip">stop doing</span><span class="chip">drop it</span>
+      </div>
+      <p class="small muted" style="margin-top:6px">Heard in the room:</p>
+      <div class="chips d"><span class="chip x">"what are we actually trying to do here?"</span><span class="chip x">"would we start this today?"</span><span class="chip x">"ask Sara, she has been through this"</span></div>
+    </div>
+  </div>
+  <aside class="notes">Absences are as telling as presences: no "resource", no "the business" as a distant actor, little talk of scope boundaries. People are referred to by name and by strength.</aside>
+</section>
+
+<!-- ============ 10. DRUCKERIAN: STRENGTHS & COSTS ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker" style="color:var(--dru)">Profile two</div>
+  <h2>Strengths and costs</h2>
+  <div class="cols2" style="flex:1">
+    <div class="card d" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag d">Strengths</span>
+      <ul class="list druc sm" style="margin-top:8px">
+        <li><b>Finds the real problem:</b> stopping or redirecting work is a normal weekly act</li>
+        <li>Method adapts as fast as the work changes</li>
+        <li>Feedback reaches the person who can act on it, quickly</li>
+        <li>Context stays in people, so edge cases are handled where they arise</li>
+        <li><b>The profile for investigation:</b> work whose answer is not known in advance</li>
+      </ul>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag grey">Costs</span>
+      <ul class="list druc sm" style="margin-top:8px">
+        <li><b>Depends on people</b> with judgement, context and the habit of speaking up; real key-person risk</li>
+        <li>Hard to scale and hard to replace: when someone leaves, the work has to be re-thought</li>
+        <li>Hard to forecast for finance; slack looks like waste to anyone counting utilisation</li>
+        <li>Roles blur: technically-titled people carry communication, reporting and planning <b>nobody assigned them</b></li>
+        <li>Outcome measures must be built, and can still be turned into targets</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">Costs are stated with the same weight as the Taylorist ones. The key-person risk is real and returns in Part 2 as a known cost of the core team. Deming's point on numerical goals applies to outcome measures as much as to any other.</aside>
+</section>
+
+<!-- ============ 11. SIDE BY SIDE ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">Side by side</div>
+  <h2>Signals an outsider can read off the room</h2>
+  <table>
+    <tr><th class="n"></th><th class="t">Taylorist team</th><th class="d">Druckerian team</th></tr>
+    <tr><td class="k">Organised around</td><td class="t">an activity or layer</td><td class="d">an outcome someone outside experiences</td></tr>
+    <tr><td class="k">"What is the task?"</td><td class="t">answered elsewhere, before arrival</td><td class="d">answered by the team, out loud</td></tr>
+    <tr><td class="k">Method lives in</td><td class="t">documents and roles above the team</td><td class="d">the people doing the work</td></tr>
+    <tr><td class="k">Measurement counts</td><td class="t">units produced per period</td><td class="d">what changed outside the team</td></tr>
+    <tr><td class="k">Measurement flows</td><td class="t">upward, for control</td><td class="d">to the doer, for self-correction</td></tr>
+    <tr><td class="k">Stopping work</td><td class="t">requires a change request</td><td class="d">is a normal weekly act</td></tr>
+    <tr><td class="k">When someone leaves</td><td class="t">request a replacement of the same grade</td><td class="d">reconsider what the work is</td></tr>
+  </table>
+  <aside class="notes">Read two or three rows aloud and let the room place themselves. The remaining rows from the profiles note (idle time, standup, quality, improvement, review direction) are available for questions.</aside>
+</section>
+
+<!-- ============ 12. THE DIAGNOSTIC ============ -->
+<section class="slide dark2" data-part="Part 1 · Two profiles">
+  <div class="kicker">The diagnostic</div>
+  <h2>Four questions that resist faking</h2>
+  <div class="cols4" style="flex:1;margin-top:10px">
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px"><div class="big-num" style="color:var(--leaf-l)">1</div><h3>Who defines the task?</h3><p class="small muted">Before arrival, elsewhere, or by the team?</p></div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px"><div class="big-num" style="color:var(--leaf-l)">2</div><h3>Where does the method live?</h3><p class="small muted">In documents and roles above, or in the people doing the work?</p></div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px"><div class="big-num" style="color:var(--leaf-l)">3</div><h3>Which way does measurement flow?</h3><p class="small muted">Up, for control, or to the doer, for correction?</p></div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px"><div class="big-num" style="color:var(--leaf-l)">4</div><h3>What happens when someone says the work should not be done?</h3><p class="small muted">A change request, or a normal Tuesday?</p></div>
+  </div>
+  <p class="step" style="margin-top:34px">Any organisation can adopt the vocabulary in a quarter. <span class="em">None of these four survives a quarter of pretending.</span></p>
+  <aside class="notes">This is the part of the talk worth photographing. Give the audience a moment to answer each for their own team. Pace: build one card at a time.</aside>
+</section>
+
+<!-- ============ 13. SAME WORDS, DIFFERENT STRUCTURE ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">Recognition</div>
+  <h2>Agile adopted Drucker's vocabulary. Most organisations kept Taylor's structure.</h2>
+  <div style="display:flex;flex-direction:column;gap:22px;flex:1;justify-content:center">
+    <div class="chain step"><div class="node t" style="background:var(--dru-bg);border-color:#e7c3aa;font-size:30px"><b>Story points</b></div><div class="arrow">=</div><div class="node" style="background:var(--tay-bg);border-color:#b8c6e0;font-size:30px"><b>Time study</b>, with a friendlier name</div></div>
+    <div class="chain step"><div class="node" style="background:var(--dru-bg);border-color:#e7c3aa;font-size:30px"><b>The backlog</b></div><div class="arrow">=</div><div class="node" style="background:var(--tay-bg);border-color:#b8c6e0;font-size:30px">A queue of <b>instruction cards</b></div></div>
+    <div class="chain step"><div class="node" style="background:var(--dru-bg);border-color:#e7c3aa;font-size:30px"><b>Scrum master, tech lead, line manager, delivery manager, client manager</b>, none accountable for the whole outcome</div><div class="arrow">=</div><div class="node" style="background:var(--tay-bg);border-color:#b8c6e0;font-size:30px">Taylor's <b>functional foremanship</b>, rebuilt by accident</div></div>
+  </div>
+  <p class="muted small step">Neither side of each line is wrong. The point is that the left-hand words describe one system and the right-hand structure runs another.</p>
+  <aside class="notes">Three mappings, one per build. The aim is naming, not accusation. Functional foremanship: Taylor split the single foreman into eight specialised bosses, each authoritative in a narrow domain.</aside>
+</section>
+
+<!-- ============ 14. DEGRADED TAYLORISM ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">The sharpened thesis</div>
+  <h2>Taylorism with the knowledge half removed</h2>
+  <div class="cols2" style="flex:1">
+    <div class="card core" style="display:flex;flex-direction:column;gap:14px;opacity:.55">
+      <span class="tag core">Taylor's knowledge claim</span>
+      <p class="lead" style="font-size:36px">How long a task takes is a <b>measurable fact</b>, discoverable by investigation.</p>
+      <p class="small muted">Study the work. Time it. Establish what is possible. Then both sides look at the same number.</p>
+      <p class="small"><b>Dropped.</b></p>
+    </div>
+    <div class="card t" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag t">Taylor's control apparatus</span>
+      <p class="lead" style="font-size:36px">Standards, instruction cards, planning separated from execution, functional supervision.</p>
+      <p class="small muted">Everything needed to direct work from above, assuming the number underneath is real.</p>
+      <p class="small"><b>Kept.</b></p>
+    </div>
+  </div>
+  <p class="step" style="margin-top:30px">The organisation pays <b>all of Taylorism's costs</b> and collects <b>none of its benefit</b>.</p>
+  <aside class="notes">Large enterprises did not choose Taylorism; they grew into it. They describe themselves in Drucker's vocabulary, believe it, and keep asking for innovation the structure has no path to produce. This is the pivot of Part 1.</aside>
+</section>
+
+<!-- ============ 15. INPUT VS OUTPUT ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">What gets measured</div>
+  <h2>Input to the hour. Output not at all.</h2>
+  <div class="cols2" style="flex:1;align-items:stretch">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card"><span class="tag grey">Input: precise, current</span><div class="chips"><span class="chip">headcount</span><span class="chip">day rates</span><span class="chip">hours booked</span><span class="chip">utilisation</span><span class="chip">budget consumed</span></div><p class="small muted" style="margin-top:12px">It arrives on invoices, so finance needs it.</p></div>
+      <div class="card flat step"><span class="tag grey">Output: not established</span><p class="lead" style="font-size:34px">What the money bought is recorded nowhere.</p></div>
+    </div>
+    <div class="card step" style="display:flex;flex-direction:column">
+      <span class="tag grey">What looks like output measurement</span>
+      <svg viewBox="0 0 700 330" style="width:100%;flex:1">
+        <line x1="40" y1="290" x2="680" y2="290" stroke="#aab4ae" stroke-width="2"/><line x1="40" y1="20" x2="40" y2="290" stroke="#aab4ae" stroke-width="2"/>
+        <polyline points="50,250 150,225 250,200 350,170 450,140 550,95 660,50" fill="none" stroke="#34568b" stroke-width="6" stroke-linejoin="round"/>
+        <text x="420" y="40" font-size="24" fill="#34568b" font-weight="600">velocity</text>
+        <line x1="50" y1="262" x2="660" y2="262" stroke="#b9622f" stroke-width="5" stroke-dasharray="4 10" stroke-linecap="round"/>
+        <text x="330" y="318" font-size="24" fill="#b9622f" font-weight="600">what changed outside the team</text>
+      </svg>
+      <p class="small muted">The team's estimate of its own work, compared against itself. The line can rise while nothing outside changes.</p>
+    </div>
+  </div>
+  <aside class="notes">One column is precise to the hour; the other had to be reconstructed from ticket histories. Velocity is not dishonest, it is self-referential: it can rise indefinitely without touching anything outside.</aside>
+</section>
+
+<!-- ============ 16. THE DRIFT ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">How it happens</div>
+  <h2>A gradient, not malice</h2>
+  <div class="chain" style="flex-wrap:nowrap;margin:10px 0 40px">
+    <div class="node step"><b>Input cost</b> is trivially countable</div><div class="arrow step">→</div>
+    <div class="node step"><b>Output</b> is genuinely hard</div><div class="arrow step">→</div>
+    <div class="node step">Measurement <b>descends to the easy half</b></div><div class="arrow step">→</div>
+    <div class="node step"><b>No early signal</b></div>
+  </div>
+  <div class="cols2" style="flex:1">
+    <div class="card step"><h3>Second-order effect</h3><p>With no output measure, problems stay invisible until they are catastrophic. A manager who raises a concern with no metric behind it is simply <b>the person bringing bad news</b>.</p></div>
+    <div class="card core step"><h3>So silence is rational</h3><p>Until the problem is undeniable, nobody is rewarded for being early. It is a property of the structure, not of anyone's character.</p></div>
+  </div>
+  <p class="small muted step" style="margin-top:26px"><b>Taylor is a critic of these organisations, not their patron.</b> His 1900 diagnosis applies unchanged: management did not actually know how long the work should take.</p>
+  <aside class="notes">This rescues the Taylor history from being a villain origin story. Taylor started from the premise that the time a task takes is a fact to be investigated. The enterprise kept the control and dropped the investigation.</aside>
+</section>
+
+<!-- ============ 17. DISPOSITION IS PREFERENCE ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">Preference, not type</div>
+  <h2>The thought was there. The forum was wrong.</h2>
+  <div class="cols2" style="flex:1">
+    <div class="card core" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag core">Structural half · changeable</span>
+      <ul class="list sm" style="margin-top:6px">
+        <li>The <b>forum</b>: open meetings collect nothing</li>
+        <li>The <b>incentive</b>: asking has a social cost, guessing has none</li>
+        <li>Change both; expect it to take months</li>
+      </ul>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag grey">Preference half · design around it</span>
+      <ul class="list sm" style="margin-top:6px">
+        <li>People genuinely differ in which profile they thrive in</li>
+        <li>Bounded problems with clear paths <b>suit some people, and are where they do their best work</b></li>
+        <li>A working preference and a strength, <b>never a grade</b> of engineer</li>
+      </ul>
+    </div>
+  </div>
+  <p class="step" style="margin-top:30px">The person who never volunteers an opinion in an open forum gives a <b>precise, considered answer when asked directly.</b></p>
+  <aside class="notes">Careful with register: this slide is where the talk could slide into sorting people. Keep it to forum and incentive on one side, working preference on the other. Preference is designed around, not corrected.</aside>
+</section>
+
+<!-- ============ 18. PREMISES ============ -->
+<section class="slide" data-part="Part 1 · Two profiles">
+  <div class="kicker">When both share one organisation</div>
+  <h2>Premises for the design, taken from experience</h2>
+  <div class="cols4" style="grid-template-columns:repeat(4,1fr);gap:20px;flex:1">
+    <div class="card step"><h3 style="font-size:30px">Defined work only</h3><p class="small">Delivers what is explicitly defined, and nothing that is not. Room for investigation produces no usable result.</p></div>
+    <div class="card step"><h3 style="font-size:30px">Opinions on request</h3><p class="small">Ask a person and the answer is considered. Do not ask and there is silence, even in meetings convened to collect opinions.</p></div>
+    <div class="card step"><h3 style="font-size:30px">Disengaged, not disenfranchised</h3><p class="small">Real say over craftsmanship. What is absent is any wish to participate beyond the ticket.</p></div>
+    <div class="card step"><h3 style="font-size:30px">Distance is not it</h3><p class="small">The loop is short and questions can be answered the same morning. They are not asked. The barrier is social, not temporal.</p></div>
+    <div class="card step"><h3 style="font-size:30px">Attribution, not investigation</h3><p class="small">Nobody says they were wrong. With no shared record of what was supposed to happen, there is nothing to compare against but each other.</p></div>
+    <div class="card step"><h3 style="font-size:30px">Documentation is a maze</h3><p class="small">Extensive and unusable. Finding the page is harder than asking, and asking is not done either.</p></div>
+    <div class="card step"><h3 style="font-size:30px">Carry-over is never read</h3><p class="small">Remaining points roll sprint after sprint. The data is not hidden. It is never looked at.</p></div>
+    <div class="card core step"><h3 style="font-size:30px">Stable horizon</h3><p class="small">Broader responsibility was offered over several years and not taken up. This will not change within the planning horizon.</p></div>
+  </div>
+  <aside class="notes">These are premises, not findings to re-argue. Everything is structural: nothing here is an explanation by culture. The design that follows holds whether the stream is staffed by an external provider, an internal team or AI agents; an agent that proceeds on a plausible guess rather than asking is the same failure shape.</aside>
+</section>
+
+<!-- ============ 19. BRIDGE ============ -->
+<section class="slide dark2 section" data-part="Part 1 · Two profiles">
+  <div class="kicker">Bridge</div>
+  <blockquote>Stop trying to make a delivery group exceed the envelope.<br><span class="em">Make the envelope equal the correct outcome.</span></blockquote>
+  <p class="lead muted step" style="margin-top:44px;max-width:1350px">If the minimum is sufficient, minimum-effort behaviour stops being a problem.</p>
+  <aside class="notes">This sentence is the hinge between the halves. Everything in Part 2 is a consequence of it. Pause here; this is the end of Part 1.</aside>
+</section>
+
+<!-- ============ 20. PART 2 ============ -->
+<section class="slide dark section" data-part="Part 2 · Working structure">
+  <div class="num">2</div>
+  <h1 style="font-size:96px">The working structure</h1>
+  <p class="lead muted" style="margin-top:28px;max-width:1250px">A core team and delivery streams, working side by side while the landscape keeps evolving.</p>
+  <div class="field" data-trees="46" data-seed="11" style="color:#1c4a37"></div>
+  <aside class="notes">Part 2 runs roughly twenty-four minutes. Goal: a specific operating model, in depth. The core team is a proposal, not the current state; there is no core team today.</aside>
+</section>
+
+<!-- ============ 21. THE ORGANISING PRINCIPLE ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">The organising principle</div>
+  <blockquote style="margin:6px 0 30px">Definition completeness is the interface, and it is the core team's product.</blockquote>
+  <p style="max-width:1560px">If delivery executes exactly the envelope it is given, the envelope determines the outcome. <b>A shortfall in delivery is a shortfall in the envelope.</b> That puts the defect with the party that can fix it.</p>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:30px;flex:1">
+    <div class="chain step"><div class="node dim" style="flex:1.1">Ambiguity yields nothing</div><div class="arrow">→</div><div class="node core" style="flex:1.5">Ambiguity never crosses the boundary</div></div>
+    <div class="chain step"><div class="node dim" style="flex:1.1">The minimum is what gets delivered</div><div class="arrow">→</div><div class="node core" style="flex:1.5">The minimum is made identical to the correct outcome</div></div>
+    <div class="chain step"><div class="node dim" style="flex:1.1">Documentation outgrows navigation</div><div class="arrow">→</div><div class="node core" style="flex:1.5">Rules are executable, not written</div></div>
+    <div class="chain step"><div class="node dim" style="flex:1.1">Nothing is volunteered</div><div class="arrow">→</div><div class="node core" style="flex:1.5">Information is pulled on a schedule</div></div>
+    <div class="chain step"><div class="node dim" style="flex:1.1">Blame has nowhere useful to go</div><div class="arrow">→</div><div class="node core" style="flex:1.5">Accountability is defined so precisely the question does not arise</div></div>
+  </div>
+  <aside class="notes">Left column is the observed premise; right column is the design response. Each of the next slides expands one of these. This is also the table of contents for Part 2.</aside>
+</section>
+
+<!-- ============ 22. THE BOUNDARY IS DISPOSITIONAL ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">Where the boundary actually falls</div>
+  <h2>The design sorts by work class, never by location or employer</h2>
+  <div class="cols2" style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="card core"><span class="tag core">Core team</span><p>Holds the context, the access and the authority to change the landscape. Does Class C work.</p></div>
+      <div class="card del"><span class="tag del">Delivery streams</span><p>Execute classified, fully defined work. A stream can be an <b>external provider</b>, an <b>internal team</b>, or <b>AI development agents</b>.</p></div>
+      <p class="small muted step">Both populations typically sit in the same country, sometimes in the same room. Some of the most engaged people may be in delivery.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card step" style="border-color:#c97b6b;background:#faeae6"><h3>The failure mode</h3><p>"Class A" becomes shorthand for <b>work we send over there</b>. Classification stops being about the work, and the conflict the structure prevents returns by another door.</p></div>
+      <div class="card core step"><h3>The corollary</h3><p>Someone twenty metres away who prefers bounded work with a clear path is <b>served well</b> by the same structure. A complete package is a better experience for anyone who works that way.</p></div>
+      <p class="small step">Worth adopting even if the current arrangement ends tomorrow.</p>
+    </div>
+  </div>
+  <aside class="notes">One of three decisions that are easy to undo by accident. If an audience member hears "Class A" as "work we send over there", stop and correct it. The design is not a position for or against any particular delivery group arrangement, and it is not contingent on who staffs a stream.</aside>
+</section>
+
+<!-- ============ 23. OVERVIEW FLOW ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">The whole picture</div>
+  <h2 style="margin-bottom:12px">Work is classified before it crosses the boundary</h2>
+  <svg viewBox="0 0 1640 560" style="width:100%;flex:1;min-height:0">
+    <!-- lanes -->
+    <rect x="500" y="50" width="1140" height="230" rx="16" fill="#dcebe2" opacity=".7"/>
+    <rect x="500" y="300" width="1140" height="230" rx="16" fill="#e2e6ee" opacity=".8"/>
+    <text x="520" y="76" font-size="19" font-weight="700" fill="#2a7a58" letter-spacing="2">CORE TEAM</text>
+    <text x="520" y="326" font-size="19" font-weight="700" fill="#56667e" letter-spacing="2">DELIVERY STREAMS</text>
+    <!-- nodes -->
+    <rect x="6" y="228" width="204" height="74" rx="14" fill="#fff" stroke="#aab4ae" stroke-width="2"/>
+    <text x="108" y="272" font-size="24" text-anchor="middle">Incoming demand</text>
+    <polygon points="280,210 430,210 460,265 430,320 280,320 250,265" fill="#fff" stroke="#1d2622" stroke-width="2.5"/>
+    <text x="355" y="272" font-size="26" text-anchor="middle" font-weight="700">Classification</text>
+    <rect x="540" y="92" width="250" height="76" rx="14" fill="#fff" stroke="#2a7a58" stroke-width="2.5"/>
+    <text x="665" y="125" font-size="24" text-anchor="middle">Landscape evolution</text><text x="665" y="152" font-size="20" text-anchor="middle" fill="#5d6a64">core team only</text>
+    <rect x="540" y="184" width="250" height="76" rx="14" fill="#fff" stroke="#2a7a58" stroke-width="2.5"/>
+    <text x="665" y="217" font-size="24" text-anchor="middle">Definition step</text><text x="665" y="244" font-size="20" text-anchor="middle" fill="#5d6a64">B becomes A</text>
+    <rect x="880" y="92" width="230" height="76" rx="14" fill="#fff" stroke="#2a7a58" stroke-width="2.5"/>
+    <text x="995" y="138" font-size="24" text-anchor="middle">Fitness functions</text>
+    <rect x="540" y="360" width="250" height="76" rx="14" fill="#fff" stroke="#56667e" stroke-width="2.5"/>
+    <text x="665" y="406" font-size="24" text-anchor="middle">Package queue</text>
+    <rect x="880" y="360" width="230" height="76" rx="14" fill="#fff" stroke="#56667e" stroke-width="2.5"/>
+    <text x="995" y="390" font-size="23" text-anchor="middle">Execute within</text><text x="995" y="418" font-size="23" text-anchor="middle">stated scope</text>
+    <rect x="1200" y="240" width="190" height="76" rx="14" fill="#1d2622"/>
+    <text x="1295" y="286" font-size="24" text-anchor="middle" fill="#fff">Pipeline gates</text>
+    <rect x="1450" y="240" width="170" height="76" rx="14" fill="#fff" stroke="#aab4ae" stroke-width="2"/>
+    <text x="1535" y="286" font-size="24" text-anchor="middle">Production</text>
+    <!-- edges -->
+    <g fill="none" stroke="#5d6a64" stroke-width="3" marker-end="url(#ah)">
+      <path d="M210,265 H246"/>
+      <path d="M320,210 V130 H538"/>
+      <path d="M395,210 V222 H538"/>
+      <path d="M320,320 V398 H538"/>
+      <path d="M665,260 V358"/>
+      <path d="M790,398 H878"/>
+      <path d="M790,130 H878"/>
+      <path d="M1110,130 H1295 V238"/>
+      <path d="M1110,398 H1295 V318"/>
+      <path d="M1390,278 H1448"/>
+      <path d="M1535,238 V30 H665 V90" stroke-dasharray="9 8" stroke="#2a7a58" marker-end="url(#ahg)"/>
+    </g>
+    <text x="1100" y="22" font-size="21" fill="#2a7a58" font-style="italic">production signal</text>
+    <!-- class badges -->
+    <circle cx="435" cy="130" r="22" fill="#1f5a43"/><text x="435" y="138" font-size="22" font-weight="700" text-anchor="middle" fill="#fff">C</text>
+    <circle cx="470" cy="222" r="22" fill="#4f9a78"/><text x="470" y="230" font-size="22" font-weight="700" text-anchor="middle" fill="#fff">B</text>
+    <circle cx="435" cy="398" r="22" fill="#a9d3bb"/><text x="435" y="406" font-size="22" font-weight="700" text-anchor="middle" fill="#14382a">A</text>
+  </svg>
+  <aside class="notes">Walk the diagram left to right once. Class C stays with the core team. Class B goes through a definition step and becomes A. Only Class A crosses the boundary. Fitness functions and the gates are the same pipeline for both sides. The dotted line is production signal feeding landscape work.</aside>
+</section>
+
+<!-- ============ 24. WHAT THIS IS NOT ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">Two fatal misreadings</div>
+  <h2>It sounds like splitting the team, and like writing better tickets</h2>
+  <div class="cols3" style="grid-template-columns:repeat(3,1fr);flex:1">
+    <div class="card step"><h3>Not a reorganisation</h3><p class="small">No reporting line changes. Nobody moves desk, manager or employer.</p></div>
+    <div class="card step"><h3>Not better tickets</h3><p class="small">The ticket is a by-product. The product is the landscape and the scaffolding around it.</p></div>
+    <div class="card step"><h3>Not more process</h3><p class="small">On balance it removes steps: the re-explaining, the rework loop, the meeting about who was responsible.</p></div>
+    <div class="card step"><h3>Not a transformation programme</h3><p class="small">No name, no rollout, no training. It starts on one stream and is judged on that stream's own numbers.</p></div>
+    <div class="card step"><h3>Not contingent on anyone else changing</h3><p class="small">No renegotiation, no different hiring, no change in anyone's willingness. It works with the arrangement that exists.</p></div>
+    <div class="card core step" style="display:flex;align-items:center"><p>Not anti-agile. Not a position on who should do the delivery.</p></div>
+  </div>
+  <aside class="notes">Heard as a reorganisation it triggers resistance; heard as better tickets it triggers "a layer of cost proposed by people who want more time to write things down". Neither is what this is.</aside>
+</section>
+
+<!-- ============ 25. WORK CLASSES ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">1 · Work classification</div>
+  <h2>Nothing crosses the boundary unclassified</h2>
+  <div class="cols3" style="flex:1">
+    <div class="card step" style="border-top:12px solid var(--a);display:flex;flex-direction:column;gap:12px">
+      <span class="pill-A" style="align-self:flex-start;font-size:30px">Class A · Defined</span>
+      <p>The solution is known. An existing pattern applies. The blast radius is bounded and named. <b>The acceptance cases can be enumerated.</b></p>
+      <p class="small em" style="margin-top:auto">→ Routes to delivery</p>
+    </div>
+    <div class="card step" style="border-top:12px solid var(--b);display:flex;flex-direction:column;gap:12px">
+      <span class="pill-B" style="align-self:flex-start;font-size:30px">Class B · Definable</span>
+      <p>The outcome is understood but the solution is not yet worked out. The core team can resolve it in bounded time.</p>
+      <p class="small em" style="margin-top:auto">→ Definition step, becomes A, then routes</p>
+    </div>
+    <div class="card step" style="border-top:12px solid var(--c);display:flex;flex-direction:column;gap:12px">
+      <span class="pill-C" style="align-self:flex-start;font-size:30px">Class C · Investigation</span>
+      <p>The outcome, the solution or the blast radius is unknown. Needs exploring the landscape, reading unfamiliar code, or an architectural decision.</p>
+      <p class="small em" style="margin-top:auto">→ Core team only. Never routes</p>
+    </div>
+  </div>
+  <p class="step" style="margin-top:28px">Classification is the scarcest skill in the arrangement and in nobody's job description by default. <b>Name it, and make someone answerable for it.</b></p>
+  <aside class="notes">Classification is done by the core team. It appears in nobody's job description, which is why it silently defaults to whoever is under the most schedule pressure unless it has an owner.</aside>
+</section>
+
+<!-- ============ 26. ROUTING RULE ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">1 · The routing rule</div>
+  <h2>Five questions. No exceptions.</h2>
+  <div class="cols2" style="grid-template-columns:1.2fr 1fr;flex:1">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="chain step"><div class="node" style="flex:1.6;text-align:left">Is the <b>outcome</b> known?</div><div class="arrow">→</div><div class="node" style="flex:1;font-size:24px">no: <span class="pill-C">C</span></div></div>
+      <div class="chain step"><div class="node" style="flex:1.6;text-align:left">Is the <b>solution</b> known, with an existing pattern?</div><div class="arrow">→</div><div class="node" style="flex:1;font-size:24px">no: bounded time? <span class="pill-B">B</span> or <span class="pill-C">C</span></div></div>
+      <div class="chain step"><div class="node" style="flex:1.6;text-align:left">Is the <b>blast radius</b> bounded and named?</div><div class="arrow">→</div><div class="node" style="flex:1;font-size:24px">no: <span class="pill-C">C</span></div></div>
+      <div class="chain step"><div class="node" style="flex:1.6;text-align:left">Can the <b>acceptance cases</b> be enumerated?</div><div class="arrow">→</div><div class="node" style="flex:1;font-size:24px">no: <span class="pill-B">B</span></div></div>
+      <div class="chain step"><div class="node good" style="flex:1"><b>All yes: Class A.</b>&nbsp;Routes to delivery.</div></div>
+    </div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:16px;background:#faeae6;border-color:#c97b6b">
+      <h3>Why there are no exceptions</h3>
+      <p class="small">Routing B or C work across the boundary produces three failures at once:</p>
+      <ul class="list sm"><li>no usable output</li><li>a schedule that slips late and invisibly</li><li>a conflict where delivery is blamed for something it was never equipped or asked to do</li></ul>
+      <p class="small"><b>Every "they did the absolute minimum" traces back to a package that was not Class A when it was sent.</b></p>
+    </div>
+  </div>
+  <aside class="notes">This is the single most important rule in the structure. Under any schedule pressure, work crosses only as Class A. The cost of the rule is an empty queue now and then, which is agreed in advance.</aside>
+</section>
+
+<!-- ============ 27. THE WORK PACKAGE ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">2 · The work package</div>
+  <h2>Every field is required, or it is not Class A</h2>
+  <div class="cols2" style="grid-template-columns:1.25fr 1fr;flex:1">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start">
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:28px">Outcome</h3><p class="small">What becomes true, and why. The only thing that exposes an internally contradictory package.</p></div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:28px">Scope</h3><p class="small">Modules, services and files that may be touched, named explicitly.</p></div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:28px">Out of scope</h3><p class="small">What must not be touched. Silence reads as permission or prohibition depending on the day.</p></div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:28px">Reference implementation</h3><p class="small">A link to real code that compiles and runs. Not a prose description.</p></div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:28px">Acceptance</h3><p class="small">The cases, enumerated.</p></div>
+      <div class="card" style="padding:18px 22px"><h3 style="font-size:28px">Non-functionals</h3><p class="small">Only those that apply, from the automated gates. Or "all automated".</p></div>
+      <div class="card" style="padding:18px 22px;grid-column:span 2"><h3 style="font-size:28px">When blocked</h3><p class="small">Who to contact, through which channel, and the response commitment.</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;justify-content:center">
+      <div class="node good step" style="font-size:30px"><b>Every field fillable?</b><br>Release as Class A</div>
+      <div class="node bad step" style="font-size:30px"><b>An unfillable field?</b><br>Not Class A. Back to definition.</div>
+      <p class="small muted step">That is the gate doing its job, not a failure.</p>
+    </div>
+  </div>
+  <aside class="notes">The package determines the outcome, so it gets a mandatory structure. The gate runs on the core team's side: an unfillable field is discovered at definition time, by the person who can resolve it, instead of mid-implementation by someone who will not ask.</aside>
+</section>
+
+<!-- ============ 28. SPEC VS PLUMBING ============ -->
+<section class="slide dark2" data-part="Part 2 · Working structure">
+  <div class="kicker">2 · Acceptance scaffolding</div>
+  <h2>Pre-written failing tests make minimum effort and correct outcome the same thing</h2>
+  <p class="muted" style="max-width:1500px">The strongest definition is a set of failing tests committed with the package. But it cannot be afforded as a universal rule, and a design that depends on it is abandoned in a month. The resolution is to split the two halves of a test.</p>
+  <div class="cols2" style="flex:1;margin-top:34px">
+    <div class="card step" style="display:flex;flex-direction:column;gap:12px">
+      <span class="tag core">The specification</span>
+      <p class="lead" style="font-size:34px">Which cases, and what is expected in each.</p>
+      <p class="small muted">Where the judgement lives, and it is <b>cheap</b>. The core team owns it; it is the thinking that goes into acceptance criteria today, written down differently.</p>
+    </div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:12px">
+      <span class="tag del">The fixtures and plumbing</span>
+      <p class="lead" style="font-size:34px">Setup, data, assertions.</p>
+      <p class="small muted">Where the cost lives, and it is <b>mechanical</b>. Handed to whoever writes the code, and progressively automated. Built once, reused across every package, so the cost <b>falls</b> over time.</p>
+    </div>
+  </div>
+  <aside class="notes">Per-package cost cannot be afforded; per-landscape cost amortises. The same economics run through the whole structure. It is also the only form of definition that answers a question nobody has to ask, which matters most where the question will not be asked.</aside>
+</section>
+
+<!-- ============ 29. CASE TABLE ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">2 · Start here: criteria two different people can verify</div>
+  <h2>A case table: five to fifteen minutes, no tooling</h2>
+  <table style="margin-bottom:22px">
+    <tr><th class="n">#</th><th class="n">Given</th><th class="n">When</th><th class="n">Then</th></tr>
+    <tr><td>1</td><td>invoice 30 days overdue, balance 100.00</td><td>fee run executes</td><td>fee of 5.00 added, status unchanged</td></tr>
+    <tr><td>2</td><td>invoice 29 days overdue</td><td>fee run executes</td><td>no fee</td></tr>
+    <tr class="hi"><td>3</td><td>overdue, fee already charged this month</td><td>fee run executes</td><td>no second fee</td></tr>
+    <tr class="hi"><td>4</td><td>overdue, balance 0.00</td><td>fee run executes</td><td>no fee</td></tr>
+    <tr class="hi"><td>5</td><td>overdue, account closed</td><td>fee run executes</td><td>no fee, warning logged</td></tr>
+  </table>
+  <div class="cols4" style="gap:18px">
+    <div class="card step" style="padding:18px 22px"><h3 style="font-size:26px">Observable</h3><p class="small">What becomes true, not which steps to take.</p></div>
+    <div class="card step" style="padding:18px 22px"><h3 style="font-size:26px">Concrete values</h3><p class="small">"A fee of 5.00", not "an appropriate fee".</p></div>
+    <div class="card step" style="padding:18px 22px"><h3 style="font-size:26px">Cases enumerated</h3><p class="small">Including the negative ones. Rows 3 to 5 are the point.</p></div>
+    <div class="card step" style="padding:18px 22px"><h3 style="font-size:26px">Independently checkable</h3><p class="small">Yes or no, by someone who did not write the code.</p></div>
+  </div>
+  <aside class="notes">Rows three to five are the cases that would otherwise be guessed at, and the guess is what surfaces as rework three weeks later. Writing row three forces the core team to decide what happens when a fee was already charged. Under prose criteria that decision is deferred and settled by a guess.</aside>
+</section>
+
+<!-- ============ 30. THE LADDER ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">2 · The ladder</div>
+  <h2>Level is chosen per package, by risk. Default to level 2.</h2>
+  <table>
+    <tr><th class="n">Level</th><th class="n">The package carries</th><th class="n">Core-team cost</th><th class="n">Use for</th></tr>
+    <tr><td>1</td><td>Prose acceptance criteria</td><td>minutes</td><td><b>Nothing.</b> The current state, and the problem</td></tr>
+    <tr class="hi"><td>2</td><td><b>Case table</b>, verifiable by developer and QA</td><td>5–15 min</td><td>The default for everything</td></tr>
+    <tr><td>3</td><td>Case table plus test names, no bodies</td><td>+10 min</td><td>Shared code; real blast radius</td></tr>
+    <tr><td>4</td><td>Pre-written failing tests</td><td>hours</td><td>Money movement, compliance logic, migrations that cannot be redone</td></tr>
+  </table>
+  <div class="cols2" style="margin-top:28px;flex:1">
+    <div class="card step"><h3>Why level 1 persists</h3><p class="small">It reads as complete to whoever wrote it, who has the cases in their head. The reader supplies a different set and both leave believing they agree. "Done" becomes an opinion settled by seniority.</p></div>
+    <div class="card core step"><h3>A diagnostic</h3><p class="small">If level 4 starts to feel necessary for most packages, <b>the problem is upstream</b>: the work is not really Class A, or the harness is too weak to trust levels 2 and 3.</p></div>
+  </div>
+  <aside class="notes">Level 2 relies on the second reader: the criteria must be verifiable by a QA or analyst, not only by the developer, so the dual-verification rule is the control. Level 4 is the only fully self-verifying level, and also costs the core team a share of the work twice.</aside>
+</section>
+
+<!-- ============ 31. LEVEL 3 + GENERATION ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">2 · Level 3, and a note on generation</div>
+  <h2>Test names without bodies turn the cases into structure</h2>
+  <div class="cols2" style="grid-template-columns:1fr 1fr;flex:1">
+    <div style="display:flex;flex-direction:column;gap:20px">
+<pre><span class="k">void</span> appliesFeeToInvoiceOverdueByThirtyDays()
+<span class="k">void</span> doesNotApplyFeeBeforeThirtyDays()
+<span class="k">void</span> doesNotApplySecondFeeInSameMonth()
+<span class="k">void</span> doesNotApplyFeeToZeroBalance()
+<span class="k">void</span> logsWarningForClosedAccount()</pre>
+      <p class="small">No fixtures, no assertions. The cases are committed, appear in test reports, and a missing or empty test is visible at review. <b>"Did they handle the already-charged case?" becomes something the build answers.</b></p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="card step"><h3>Generation splits on the right seam</h3><p class="small">A human supplies the cases, where judgement lives. A model supplies the fixtures, where the cost lives. If that holds, level 4 becomes the default.</p></div>
+      <div class="card step" style="background:#faeae6;border-color:#c97b6b"><h3>The limit</h3><p class="small"><b>A generated test that encodes the wrong expectation is worse than no test.</b> It looks authoritative and turns a silent assumption into a permanent one. The case table stays human-written and human-reviewed.</p></div>
+      <p class="small em step">Adopting level 2 now is not a stopgap. It is the input the real solution needs.</p>
+    </div>
+  </div>
+  <aside class="notes">Scaffolding investments in order of return: test harness, slice test templates, contract-first OpenAPI, reference implementations worth copying, and AI context committed to the repository. The last costs a file and improves output for anyone using assistance on either side of the boundary.</aside>
+</section>
+
+<!-- ============ 32. EXECUTABLE CONSTRAINTS ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">3 · Executable constraints</div>
+  <h2>Any rule that matters must enforce itself</h2>
+  <div style="display:flex;flex-direction:column;gap:22px;flex:1;justify-content:center">
+    <div>
+      <span class="tag grey">Rule carried in prose</span>
+      <div class="chain"><div class="node">Written in a document</div><div class="arrow">→</div><div class="node">Goes stale as the landscape evolves</div><div class="arrow">→</div><div class="node">Invisible to the pipeline</div><div class="arrow">→</div><div class="node bad">Found at review, or in production</div></div>
+    </div>
+    <div class="step">
+      <span class="tag core">Rule carried in the pipeline</span>
+      <div class="chain"><div class="node core">Written as a test</div><div class="arrow">→</div><div class="node core">Changes with the landscape</div><div class="arrow">→</div><div class="node core">Violation fails the build</div><div class="arrow">→</div><div class="node good">Found locally, in minutes</div></div>
+    </div>
+  </div>
+  <p class="step" style="margin-top:26px">Prose <b>decays</b> and, worse, <b>accumulates</b>. The only signal that a document is wrong is someone reporting confusion, which by premise will not happen.</p>
+  <aside class="notes">A maze is self-perpetuating: its existence is the argument against writing anything clearer, and its size is the reason nobody reads any of it. Prose keeps a narrow role: explaining intent and why, on top of constraints that are already enforced mechanically.</aside>
+</section>
+
+<!-- ============ 33. ARCHUNIT ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">3 · A Spring landscape</div>
+  <h2>The core team changes the landscape by changing the fitness functions</h2>
+  <div class="cols2" style="grid-template-columns:1.35fr 1fr;flex:1">
+<pre style="font-size:23px"><span class="a">@AnalyzeClasses</span>(packages = <span class="s">"com.example.billing"</span>)
+<span class="k">class</span> LandscapeRules {
+
+    <span class="a">@ArchTest</span>
+    <span class="k">static final</span> <span class="t">ArchRule</span> web_never_reaches_persistence =
+        noClasses().that().resideInAPackage(<span class="s">"..web.."</span>)
+            .should().dependOnClassesThat()
+            .resideInAPackage(<span class="s">"..persistence.."</span>);
+
+    <span class="a">@ArchTest</span>
+    <span class="k">static final</span> <span class="t">ArchRule</span> state_changes_are_audited =
+        methods().that().areAnnotatedWith(StateChanging.<span class="k">class</span>)
+            .should().beAnnotatedWith(Audited.<span class="k">class</span>);
+}</pre>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <ul class="list sm">
+        <li><b>ArchUnit:</b> the highest-value item. Architectural intent as a failing test</li>
+        <li><b>Contract tests</b> generated from OpenAPI</li>
+        <li><b>Flyway</b> migration conventions</li>
+        <li><b>Checkstyle, Spotless, SpotBugs</b> configured once, inherited</li>
+        <li><b>Coverage and mutation</b> gates where meaningful</li>
+        <li><b>Compliance checks</b> as tests: audit trail, logging, residency, transaction boundaries</li>
+      </ul>
+      <div class="card core step" style="padding:20px 24px"><p class="small"><b>Compliance is Class C by construction.</b> Investigate once, encode the answer as a gate. It cannot be forgotten, skipped under deadline, or missed by someone who never found the page.</p></div>
+    </div>
+  </div>
+  <aside class="notes">The code is illustrative; StateChanging and Audited are placeholders for whatever the landscape uses. A violation surfaces in minutes, in the developer's own editor, with no one to approach and nothing to look up. Encoded compliance is also the most defensible answer available to an auditor.</aside>
+</section>
+
+<!-- ============ 34. PROTECTING LANDSCAPE WORK ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">4 · Protecting the landscape work</div>
+  <h2>The failure that kills the structure is not conflict. It is starvation.</h2>
+  <div class="cols2" style="flex:1">
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">
+      <span class="tag core">Landscape invested in</span>
+      <div class="chain" style="flex-direction:column;gap:6px;align-items:stretch">
+        <div class="node core" style="padding:10px">Landscape evolves</div><div class="arrow" style="font-size:26px;text-align:center">↓</div>
+        <div class="node core" style="padding:10px">More work falls into Class A</div><div class="arrow" style="font-size:26px;text-align:center">↓</div>
+        <div class="node core" style="padding:10px">Less authoring effort per unit delivered</div><div class="arrow" style="font-size:26px;text-align:center">↓</div>
+        <div class="node core" style="padding:10px">Core capacity freed ↺</div>
+      </div>
+    </div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px;background:#faeae6;border-color:#c97b6b">
+      <span class="tag grey">Landscape starved</span>
+      <div class="chain" style="flex-direction:column;gap:6px;align-items:stretch">
+        <div class="node" style="padding:10px">Core team feeds the queue</div><div class="arrow" style="font-size:26px;text-align:center">↓</div>
+        <div class="node" style="padding:10px">Landscape stops evolving</div><div class="arrow" style="font-size:26px;text-align:center">↓</div>
+        <div class="node" style="padding:10px">More work is Class C</div><div class="arrow" style="font-size:26px;text-align:center">↓</div>
+        <div class="node" style="padding:10px">Queue harder to fill ↺</div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The spiral is slow and very hard to reverse once it has run for a year. Evolution is aimed at routability: paved roads, clean module boundaries, generators, a reference service, removal of the areas nobody can touch safely.</aside>
+</section>
+
+<!-- ============ 35. THREE MECHANISMS ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">4 · Three mechanisms</div>
+  <h2>Landscape work is committed work with its own backlog</h2>
+  <div class="cols3" style="flex:1;align-items:stretch">
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px">
+      <h3>A defended capacity split</h3>
+      <div style="display:flex;align-items:center;gap:26px">
+        <div style="width:190px;height:190px;border-radius:50%;background:conic-gradient(var(--core) 0 50%, var(--b) 50% 80%, #c9d3cd 80% 100%);position:relative;flex:none"><div style="position:absolute;inset:48px;background:#fff;border-radius:50%"></div></div>
+        <div class="small" style="line-height:1.7"><span style="color:var(--core)">■</span> 50 landscape<br><span style="color:var(--b)">■</span> 30 authoring<br><span style="color:#aeb9b3">■</span> 20 blockers, review</div>
+      </div>
+      <p class="small muted">Illustrative. The landscape share is committed, not what is left over.</p>
+    </div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px">
+      <h3>A WIP cap on authoring</h3>
+      <p class="small">A maximum number of packages per period. At the cap, <b>the queue is allowed to run dry</b>.</p>
+      <p class="small muted">Agree it with management in advance. The first empty queue will look like a failure. It is the mechanism working; the alternative is packages that are not Class A going out under pressure.</p>
+    </div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px">
+      <h3>Evolution aimed at routability</h3>
+      <p class="small">Improve the landscape so that a larger share of future work is Class A.</p>
+      <p class="small muted">Boundaries matter most: when a typical unit of work fits one module, packages are small and review is cheap. No definition quality compensates for boundaries that cut across the work.</p>
+    </div>
+  </div>
+  <aside class="notes">The proportion of work that can be routed as Class A is the number that justifies the capacity, and the guard against building a framework nobody asked for: if a change does not raise it, it is interest, not landscape work.</aside>
+</section>
+
+<!-- ============ 36. PUSH VS PULL ============ -->
+<section class="slide dark2" data-part="Part 2 · Working structure">
+  <div class="kicker">5 · The interface between the teams</div>
+  <h2>The obvious design is the wrong one</h2>
+  <div class="cols2" style="flex:1">
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px;border-color:#c97b6b">
+      <span class="tag grey">Push · the obvious design</span>
+      <p class="lead" style="font-size:34px">An open channel with a response commitment.</p>
+      <p class="small muted">Fails on the central premise: nothing is volunteered. <b>An hour of latency is not what stops the question.</b> It is not asked when the answer is thirty seconds away, because asking has a social cost and guessing does not.</p>
+    </div>
+    <div class="card step" style="display:flex;flex-direction:column;gap:14px;border-color:var(--leaf)">
+      <span class="tag core">Pull · the design</span>
+      <p class="lead" style="font-size:34px">Specific questions to specific people, on a schedule.</p>
+      <p class="small muted">Not "any blockers?" to a group, which reliably returns nothing, but <b>"you picked this up on Tuesday: what was unclear in it?"</b> to one person. Fifteen minutes per developer per week, by name, on the calendar.</p>
+    </div>
+  </div>
+  <p class="step" style="margin-top:30px">What is optimised is not round-trip time. The loop is already short. It is <span class="em">silent assumptions</span>: work that proceeds on a guess, and surfaces weeks later as rework.</p>
+  <aside class="notes">An open channel with a stopwatch attached is the same invitation that has not worked for years. The design uses the behaviour that occurs, not the one that should. The same logic applies to any stream that proceeds on a plausible guess rather than asking.</aside>
+</section>
+
+<!-- ============ 37. FOUR RULES + SEQUENCE ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">5 · Four rules, the first one load-bearing</div>
+  <h2>Every answer produces two outputs</h2>
+  <div class="cols2" style="grid-template-columns:1fr 1.05fr;flex:1">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="padding:16px 22px"><p class="small"><b>1 · Information is pulled, on a schedule.</b> Fixed cadence, by name, someone accountable.</p></div>
+      <div class="card" style="padding:16px 22px"><p class="small"><b>2 · Blocking is expected behaviour,</b> not an escalation. A blocked package is a defect found in the core team's product. Expect months before it holds.</p></div>
+      <div class="card" style="padding:16px 22px"><p class="small"><b>3 · A named responder</b> on a rota, not also authoring packages that day.</p></div>
+      <div class="card core" style="padding:16px 22px"><p class="small"><b>4 · Two outputs per answer:</b> the answer, and a change to the template, reference or gate so the gap cannot recur.</p></div>
+    </div>
+    <svg viewBox="0 0 880 620" style="width:100%;height:100%">
+      <g font-size="22" text-anchor="middle" font-weight="700">
+        <text x="110" y="34" fill="#56667e">Delivery</text><text x="110" y="58" fill="#56667e">developer</text>
+        <text x="450" y="34" fill="#2a7a58">Named</text><text x="450" y="58" fill="#2a7a58">responder</text>
+        <text x="780" y="46" fill="#2a7a58">Core team</text>
+      </g>
+      <g stroke="#c4cdc7" stroke-width="2" stroke-dasharray="6 7"><line x1="110" y1="72" x2="110" y2="610"/><line x1="450" y1="72" x2="450" y2="610"/><line x1="780" y1="72" x2="780" y2="610"/></g>
+      <g fill="none" stroke="#1d2622" stroke-width="3" marker-end="url(#ah)">
+        <path d="M444,120 H116"/><path d="M116,205 H444"/><path d="M444,290 H116" stroke-dasharray="8 6"/><path d="M456,390 H774"/></g>
+      <rect x="665" y="446" width="230" height="68" fill="#f5f1e8"/><rect x="690" y="540" width="180" height="62" fill="#f5f1e8"/>
+      <g font-size="21" fill="#1d2622">
+        <text x="280" y="108" text-anchor="middle">Scheduled, by name:</text><text x="280" y="144" text-anchor="middle" font-style="italic">"what was unclear?"</text>
+        <text x="280" y="193" text-anchor="middle">A gap surfaces, or stop</text>
+        <text x="280" y="278" text-anchor="middle">Answer, same day</text>
+        <text x="615" y="378" text-anchor="middle">Record the gap</text>
+        <text x="780" y="470" text-anchor="middle" fill="#2a7a58" font-weight="700">Update template,</text>
+        <text x="780" y="498" text-anchor="middle" fill="#2a7a58" font-weight="700">reference or gate</text>
+        <text x="780" y="560" text-anchor="middle" fill="#5d6a64" font-style="italic">the same gap</text><text x="780" y="586" text-anchor="middle" fill="#5d6a64" font-style="italic">cannot recur</text>
+      </g>
+    </svg>
+  </div>
+  <aside class="notes">Without the second output the same question arrives every month and both sides conclude the other is not learning. The pull cadence carries the load until the blocking rule takes hold. This is also the cheapest step in the sequence and does not depend on anything else.</aside>
+</section>
+
+<!-- ============ 38. WORKING AGREEMENT ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">6 · The working agreement</div>
+  <h2>The decisive element is the list of what delivery is not accountable for</h2>
+  <div class="cols3" style="flex:1;align-items:stretch">
+    <div class="card core step"><span class="tag core">Core team is accountable for</span>
+      <ul class="list sm"><li>completeness and correctness of every released package</li><li>classification</li><li>responding within the window</li><li>gates and reference implementations</li><li>fitness of the landscape</li></ul></div>
+    <div class="card del step"><span class="tag del">Delivery is accountable for</span>
+      <ul class="list sm"><li>delivering the package as defined</li><li>answering directly when asked</li><li>reporting a blocker rather than working around it</li><li>changing nothing outside the stated scope</li></ul></div>
+    <div class="card step" style="border:3px solid var(--ink);background:#fff"><span class="tag" style="background:var(--ink);color:#fff">Delivery is explicitly NOT accountable for</span>
+      <ul class="list sm"><li>investigating</li><li>deciding architecture</li><li>identifying requirements that were not stated</li><li>judging whether the work should be done at all</li><li>improving anything outside the package</li></ul></div>
+  </div>
+  <p class="step" style="margin-top:26px">Once the second list is written down, <b>"they should have noticed" and "they did the bare minimum" are no longer available</b>, because nobody was asked to notice.</p>
+  <aside class="notes">Conflict comes from unstated expectations: one side expecting initiative the other has no mandate to provide. Passing the automated gates is deliberately absent from the list; it is not an agreement, it is a merge that does not happen. Anything the pipeline can enforce is enforced there.</aside>
+</section>
+
+<!-- ============ 39. DEFECT ROUTING ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">6 · Defect routing</div>
+  <h2>The package is the shared record</h2>
+  <div class="chain" style="margin:10px 0 36px">
+    <div class="node" style="flex:.7"><b>Defect found</b></div><div class="arrow">→</div>
+    <div class="node" style="flex:1.2;border-width:3px;border-color:var(--ink)"><b>Was it covered by the package as written?</b></div>
+    <div class="arrow">→</div>
+    <div style="flex:2;display:flex;flex-direction:column;gap:14px">
+      <div class="chain"><div class="node core" style="flex:1;font-size:24px"><b>No, not stated</b><br>Specification gap, logged against the package</div><div class="arrow">→</div><div class="node" style="flex:.9;font-size:24px">Template or fitness function updated</div></div>
+      <div class="chain"><div class="node del" style="flex:1;font-size:24px"><b>Yes, stated but wrong</b><br>Implementation error, logged against delivery</div><div class="arrow">→</div><div class="node" style="flex:.9;font-size:24px">Checklist or gate updated</div></div>
+    </div>
+  </div>
+  <div class="cols2" style="flex:1">
+    <div class="card step"><h3>Why finger-pointing happens now</h3><p class="small">With no shared record of what was supposed to happen, the only evidence is each party's account, and admitting error carries a cost with no benefit.</p></div>
+    <div class="card core step"><h3>Why this works</h3><p class="small">"Was this covered by the package as written?" has an answer, in a document both sides saw beforehand. <b>Nobody has to be persuaded to accept fault, because fault stops being the thing under discussion.</b></p></div>
+  </div>
+  <aside class="notes">Specification gaps are logged against the package, never against the person who followed it. Related hygiene: do not ask delivery for estimates and then treat them as commitments, and do not measure them on outcomes they do not control.</aside>
+</section>
+
+<!-- ============ 40. BASELINE FIRST ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">7 · Step zero: the baseline</div>
+  <h2>Before anything changes, record how the current arrangement behaves</h2>
+  <div class="cols2" style="grid-template-columns:1.1fr 1fr;flex:1">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <p>Every objection to this structure can be answered with <b>"can you give me measurements on that?"</b>, and the same question defeats the proposal just as easily. Nobody can say what the present arrangement produces.</p>
+      <div class="card core step"><p class="small"><b>One to two days of one person's time.</b> All from data that already exists. Recorded before it is announced, because numbers people know are watched start moving for the wrong reasons.</p></div>
+    </div>
+    <div class="card step">
+      <h3>Rules for the baseline</h3>
+      <ul class="list sm" style="margin-top:10px">
+        <li><b>Existing data only.</b> No new tooling, fields or reports</li>
+        <li><b>Retrospective,</b> one fixed window, the same for every measure</li>
+        <li><b>By stream, never by person.</b> Measures the interface</li>
+        <li><b>Never cut by location or employer</b></li>
+        <li><b>Where data is missing, the gap is the finding</b></li>
+        <li><b>Method published</b> with the numbers</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">A baseline produced after the results are known invites the accusation that the window was chosen to flatter, and the classification sample cannot be done after the fact. If only a fifth of defects can be traced to the work that caused them, that is not a failed measurement; it is the thesis expressed as a number.</aside>
+</section>
+
+<!-- ============ 41. THE MEASURES ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">7 · The measures</div>
+  <h2>Five pulled from the tools, one sampled by hand, one from finance</h2>
+  <div class="cols4" style="grid-template-columns:repeat(4,1fr);gap:18px;flex:1">
+    <div class="card step" style="padding:20px 22px"><h3 style="font-size:27px">1 · Sprint carry-over</h3><p class="small">Committed work not completed; items carried two sprints or more. Recorded at every close, never looked at.</p></div>
+    <div class="card step" style="padding:20px 22px"><h3 style="font-size:27px">2 · Reopen rate</h3><p class="small">Items that moved backwards after review, test or done. Rework already visible in the tooling.</p></div>
+    <div class="card step" style="padding:20px 22px"><h3 style="font-size:27px">3 · Defects after release</h3><p class="small">Total only, plus the share traceable to a story at all.</p></div>
+    <div class="card step core" style="padding:20px 22px"><h3 style="font-size:27px">4 · Definition changed after start</h3><p class="small">The closest proxy for a <b>silent assumption</b>. Connects directly to the principle.</p></div>
+    <div class="card step" style="padding:20px 22px"><h3 style="font-size:27px">5 · Lead time and review rounds</h3><p class="small">Median and 85th percentile, never the average. A long tail is definition finished during review.</p></div>
+    <div class="card step core" style="padding:20px 22px"><h3 style="font-size:27px">6 · Classification sample</h3><p class="small">10 to 20 completed items classified A, B or C by two people independently, acceptance rated against the ladder.</p></div>
+    <div class="card step" style="padding:20px 22px"><h3 style="font-size:27px">7 · Input, same window</h3><p class="small">Hours and cost from finance. Output now sits beside input for the first time.</p></div>
+    <div class="card flat step" style="padding:20px 22px"><h3 style="font-size:27px">Cross-check</h3><p class="small">If B and C items account for most reopens, escapes and mid-flight changes, the case is made with the organisation's own data.</p></div>
+  </div>
+  <aside class="notes">Good for order of magnitude and direction of travel, not for decimals. Not an assessment of any person, team or supplier, and not a target. A quarter later, rerun the same queries and compare each stream against its own baseline, never against other streams.</aside>
+</section>
+
+<!-- ============ 42. WHAT TO MEASURE FROM THEN ON ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">8 · What to measure from then on</div>
+  <h2>Measure the interface, not the people</h2>
+  <div class="cols2" style="flex:1">
+    <ul class="list">
+      <li><b>Package completeness defect rate:</b> gaps found per package, after release</li>
+      <li><b>First-time-pass rate</b></li>
+      <li><b>Round trips per package</b></li>
+      <li><b>Blocked time:</b> raised to resumed</li>
+      <li><b>Escape defects by category:</b> specification gap or implementation error</li>
+      <li><b>Proportion of work classifiable as A</b></li>
+      <li><b>Lead time,</b> package-ready to merged</li>
+      <li><b>Authoring ratio:</b> core hours per package against delivery hours</li>
+    </ul>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="card" style="border:3px solid var(--ink)"><h3>A caution that applies to every item</h3><p class="small">These exist for the core team's own correction. The moment one becomes a performance target for anyone, it will be optimised directly and stop carrying information.</p></div>
+      <div class="card step"><p class="small">Proportion-of-work-Class-A is especially easy to improve by <b>reclassifying</b> rather than by improving the landscape. Deming's eleventh point: measure to understand variation, and do not set numerical goals for people.</p></div>
+    </div>
+  </div>
+  <aside class="notes">Package completeness defect rate is the core team's primary quality metric and the health indicator for the whole arrangement. The authoring ratio feeds the next slide.</aside>
+</section>
+
+<!-- ============ 43. CAPACITY ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">9 · Capacity</div>
+  <h2>What to say when asked to scale: the answer is arithmetic</h2>
+  <div style="display:flex;align-items:center;gap:26px;flex:1">
+    <div style="display:flex;flex-direction:column;gap:22px;flex:1">
+      <div class="node core" style="font-size:28px">Core authoring and triage bandwidth</div>
+      <div class="node del" style="font-size:28px">Delivery headcount</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node" style="font-size:32px;border:4px solid var(--ink);padding:40px 34px;flex:.8"><b>Capacity ceiling</b></div>
+    <div class="arrow">→</div>
+    <div style="display:flex;flex-direction:column;gap:22px;flex:1.5">
+      <div class="node good step" style="font-size:26px"><b>Below the ceiling:</b> added headcount becomes throughput</div>
+      <div class="node bad step" style="font-size:26px"><b>Above the ceiling:</b> added headcount becomes queue, then pressure to release packages that are not Class A, then bad delivery and conflict</div>
+    </div>
+  </div>
+  <p class="step">Measure the ratio and publish it. That volume requires a proportional increase in core authoring capacity, <b>or the additional people will wait.</b></p>
+  <aside class="notes">This is the cost of the structure turned into a planning tool. It also protects against the failure mode where the structure is blamed for the consequences of scaling past its ceiling.</aside>
+</section>
+
+<!-- ============ 44. REVIEW ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">10 · Review</div>
+  <h2>Review must be as deterministic as the package</h2>
+  <div class="cols2" style="flex:1;align-items:stretch">
+    <div class="card core" style="display:flex;flex-direction:column;gap:14px"><span class="tag core">The pipeline checks first</span>
+      <ul class="list sm"><li>style and structure</li><li>boundaries</li><li>coverage</li><li>contracts</li><li>compliance gates</li></ul>
+      <p class="small muted" style="margin-top:auto">Before a human looks.</p></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px"><span class="tag grey">A human reviews what automation cannot see</span>
+      <ul class="list sm"><li>against a <b>written checklist</b>, not individual taste</li><li>disagreement about preference is resolved by <b>adding a rule to the pipeline</b>, not by a comment thread nobody will push back on</li></ul></div>
+  </div>
+  <aside class="notes">Otherwise review becomes the largest single generator of round trips and resentment. Short slide; keep moving.</aside>
+</section>
+
+<!-- ============ 45. FORMING THE CORE TEAM ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">11 · The core team does not exist yet</div>
+  <h2>Forming it: small, drawn from the team already working that way</h2>
+  <div class="cols2" style="flex:1">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="padding:20px 26px"><p class="small"><b>Where the people come from.</b> The nucleus is whoever already defines its own tasks, argues about problems rather than responsibility, and can say who the work is for. Mostly a different mandate, not hiring. What happens to the work it does now has to be answered first.</p></div>
+      <div class="card" style="padding:20px 26px"><p class="small"><b>Four to six people.</b> Authoring and classification are the constraint, and adding people to a group that holds shared context has the usual cost.</p></div>
+      <div class="card" style="padding:20px 26px"><p class="small"><b>What to protect it from.</b> Being measured on authoring throughput, because that is the only part of its output anyone upstream can see. The conversation happens <b>before</b> the team starts.</p></div>
+    </div>
+    <div class="card core" style="display:flex;flex-direction:column;gap:12px">
+      <span class="tag core">Needed on day one, in order</span>
+      <div class="chain" style="flex-direction:column;align-items:stretch;gap:14px;margin-top:6px">
+        <div class="node step" style="text-align:left"><b>1 · Authority to refuse a package.</b><br><span class="small muted">Without it: a documentation function.</span></div>
+        <div class="node step" style="text-align:left"><b>2 · Access to production signal.</b><br><span class="small muted">Without it: loses the feedback, becomes an architecture function.</span></div>
+        <div class="node step" style="text-align:left"><b>3 · A named owner for classification.</b><br><span class="small muted">Without it: classification defaults to whoever has the most pressure.</span></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The core team is a proposal, not the current state. A core team assembled from people who have only worked in the first profile will produce packages that reproduce it. Where it is drawn from matters more than its size.</aside>
+</section>
+
+<!-- ============ 46. HOW THE CORE TEAM WORKS ============ -->
+<section class="slide dark2" data-part="Part 2 · Working structure">
+  <div class="kicker">11 · How the core team works internally</div>
+  <h2>In the forest, not above it</h2>
+  <p class="muted" style="max-width:1500px">A team whose own practice is document-first and handoff-based produces document-first, handoff-based artefacts. Within a year it becomes the architecture function this structure exists to replace.</p>
+  <div class="cols4" style="grid-template-columns:repeat(4,1fr);gap:20px;flex:1;margin-top:28px">
+    <div class="card step"><h3 style="font-size:28px">In the code</h3><p class="small">Writes production code in the systems it writes packages for. A week with no commits and its model starts to diverge.</p></div>
+    <div class="card step"><h3 style="font-size:28px">Pair and mob</h3><p class="small">The one effective mitigation of key-person risk. More documents is not it.</p></div>
+    <div class="card step"><h3 style="font-size:28px">Test first</h3><p class="small">A team cannot write scaffolding for others if it does not write tests for itself.</p></div>
+    <div class="card step"><h3 style="font-size:28px">Refactor continuously</h3><p class="small">Small steps, fitness functions as a ratchet. Strangler over replacement.</p></div>
+    <div class="card step"><h3 style="font-size:28px">Simple design</h3><p class="small">If a change does not raise the share routable as Class A, it is interest, not landscape work.</p></div>
+    <div class="card step"><h3 style="font-size:28px">Whole team</h3><p class="small">The analyst and QA sit inside it, in the room when criteria are written.</p></div>
+    <div class="card step"><h3 style="font-size:28px">Sustainable pace</h3><p class="small">The bottleneck for everything. Burning it ends the arrangement, and shows up as quality decay.</p></div>
+    <div class="card core step"><h3 style="font-size:28px">Compliance lives here</h3><p class="small">Class C by construction. End state: the answer encoded as a fitness function.</p></div>
+  </div>
+  <aside class="notes">The practices are the extreme programming ones, and they are load-bearing rather than decorative. "In the forest, not above it" carries the Andres-Beck and Beck asymmetry of decay: a forest degrades into desert without anyone deciding to let it. Same word as the title, different use: here the forest is the landscape the team has to stay inside.</aside>
+</section>
+
+<!-- ============ 47. KNOWN COSTS ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">12 · Known costs</div>
+  <h2>Stated, so they are decisions rather than surprises</h2>
+  <div class="cols2" style="flex:1">
+    <ul class="list">
+      <li>Delivery capacity is <b>capped by core-team bandwidth</b> and does not scale by hiring delivery</li>
+      <li>The core team is on the <b>critical path for everything</b>, with real key-person risk that risk or audit will eventually ask about</li>
+      <li>The capability gap <b>widens over time</b>, and the structure has no mechanism to close it</li>
+    </ul>
+    <ul class="list">
+      <li><b>Nobody moves from one group to the other.</b> The cost with an ethical dimension. Make it an explicit position, not an emergent one; even a token rotation path changes what it means</li>
+      <li>The queue will sometimes be empty, and that is agreed in advance</li>
+      <li>The investment lands <b>a quarter before the return</b>: the bill arrives first</li>
+    </ul>
+  </div>
+  <aside class="notes">Drucker advocated outsourcing precisely so that people doing support work would have somewhere to advance. A structure where one population permanently cannot enter the other reproduces the problem he was trying to solve. Name it.</aside>
+</section>
+
+<!-- ============ 48. WHAT IT BUYS ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">13 · What it buys</div>
+  <h2>The structure is a means. This is the end.</h2>
+  <div class="cols3" style="flex:1">
+    <div class="card core step"><h3>The organisation can say what the money bought</h3><p class="small">Output beside input for the first time. The benefit that makes the rest arguable with evidence.</p></div>
+    <div class="card step"><h3>Capacity lost to rework comes back</h3><p class="small">The largest line item nobody has a figure for, currently attributed to the team being slower than expected.</p></div>
+    <div class="card step"><h3>The landscape can change again</h3><p class="small">Committed capacity, its own backlog, and a number that says whether it is paying off.</p></div>
+    <div class="card step"><h3>Problems surface early</h3><p class="small">Reopens, escapes and carry-over are leading indicators, available weekly. A conversation on Tuesday, not a defect in November.</p></div>
+    <div class="card step"><h3>Conflict stops being generated</h3><p class="small">"They did the minimum" is replaced by a question with an answer both sides can see.</p></div>
+    <div class="card step"><h3>Documented rules become enforced rules</h3><p class="small">A control encoded as a gate is cheaper to evidence and stronger than a policy document.</p></div>
+  </div>
+  <aside class="notes">Pair with the honest arithmetic: a core team of four to six from existing staff, a standing authoring load that caps throughput at a measurable ceiling, and about a quarter before any return is visible.</aside>
+</section>
+
+<!-- ============ 49. SEQUENCE ============ -->
+<section class="slide" data-part="Part 2 · Working structure">
+  <div class="kicker">14 · Sequence</div>
+  <h2>Roughly in dependency order, not a timeline</h2>
+  <div class="cols2" style="flex:1">
+    <ol class="list sm" style="list-style:none;display:flex;flex-direction:column;gap:11px;counter-reset:s -1">
+      <li style="counter-increment:s"><b>0 · Record the baseline,</b> before anything is announced</li>
+      <li style="counter-increment:s"><b>1 ·</b> Form the core team; settle mandate, size and its current work</li>
+      <li style="counter-increment:s"><b>2 ·</b> Agree capacity split and authoring cap, including what an empty queue means</li>
+      <li style="counter-increment:s"><b>3 ·</b> Write the working agreement, both lists, circulate on both sides</li>
+      <li style="counter-increment:s"><b>4 ·</b> Define the three classes and the routing rule; name the classifier</li>
+      <li style="counter-increment:s"><b>5 ·</b> Put the pull cadence on the calendar, by name, with an owner</li>
+    </ol>
+    <ol class="list sm" style="list-style:none;display:flex;flex-direction:column;gap:11px">
+      <li><b>6 ·</b> Build the package template; run ten packages through it</li>
+      <li><b>7 ·</b> Put ArchUnit and the compliance checks into the pipeline</li>
+      <li><b>8 ·</b> Build one reference implementation, real, deployed, worth copying</li>
+      <li><b>9 ·</b> Move acceptance to case tables on one stream; compare against its own baseline</li>
+      <li><b>10 ·</b> Scaffolding in order: harness, slice templates, contract-first, references, AI context</li>
+      <li><b>11 ·</b> Track package completeness defects and share of Class A from the start</li>
+    </ol>
+  </div>
+  <p class="small em step">Steps 5 and 9 are the cheapest, and they start returning first.</p>
+  <aside class="notes">Step 2 happens before the team starts, not at its first review. Step 5 does not depend on anything else on the list. Step 9 requires no tooling.</aside>
+</section>
+
+<!-- ============ 50. DECIDABLE ============ -->
+<section class="slide dark2 section" data-part="Close">
+  <div class="kicker">What makes it decidable</div>
+  <blockquote>Record the baseline. Run one stream for a quarter. Compare that stream against its own prior numbers.</blockquote>
+  <p class="lead muted step" style="margin-top:46px;max-width:1400px">If the rework, the carry-over and the mid-flight definition changes have not moved, the argument is wrong, and the evidence will say so.</p>
+  <aside class="notes">This is the answer to "can you give me measurements on it" and the first time the organisation can say what the work produced rather than only what it cost.</aside>
+</section>
+
+<!-- ============ 51. CLOSE ============ -->
+<section class="slide dark section" data-part="Close">
+  <h1 style="font-size:92px">Count the forest.</h1>
+  <p class="lead" style="margin-top:34px;max-width:1450px">Trees are still worth counting. Hours, points and tickets answer real questions. They do not answer the question the forest asks.</p>
+  <div class="cols3 step" style="margin-top:44px;gap:26px;max-width:1650px">
+    <div class="card"><p class="small"><b>Recognise</b> which structure is running, not which vocabulary.</p></div>
+    <div class="card"><p class="small"><b>Diagnose</b> with four questions that resist faking.</p></div>
+    <div class="card"><p class="small"><b>Design</b> the envelope so the minimum is the correct outcome.</p></div>
+  </div>
+  <div class="field" data-trees="46" data-seed="5" style="color:#1c4a37;height:240px"></div>
+  <aside class="notes">Close on the title. Not anti-agile, not a methodology pitch, not a position for or against any particular delivery group arrangement. Then open for questions (five minutes).</aside>
+</section>
+
+<!-- ============ 52. Q&A ============ -->
+<section class="slide dark2 section" data-part="Q&amp;A">
+  <div class="kicker">Questions</div>
+  <h1 style="font-size:96px">Four questions, once more</h1>
+  <ol class="list" style="list-style:none;margin-top:44px;gap:20px">
+    <li style="padding-left:0"><span class="em">1</span> &nbsp;Who defines the task?</li>
+    <li style="padding-left:0"><span class="em">2</span> &nbsp;Where does the method live?</li>
+    <li style="padding-left:0"><span class="em">3</span> &nbsp;Which way does measurement flow?</li>
+    <li style="padding-left:0"><span class="em">4</span> &nbsp;What happens when someone says the work should not be done?</li>
+  </ol>
+  <aside class="notes">Leave this up during Q&amp;A. Likely questions: how to start with no core team (slide 45 and 49), whether this is a position against any delivery group arrangement (slide 22), what the baseline costs (slide 40), and how AI generation changes the ladder (slide 31).</aside>
+</section>
+
+<div class="footer"><span id="partLabel"></span><span id="counter"></span></div>
+</div>
+
+<script>
+(function(){
+  const stage=document.getElementById('stage');
+  const slides=[...stage.querySelectorAll('.slide')];
+  const total=slides.length;
+  const notesEl=document.getElementById('notes');
+  const partEl=document.getElementById('partLabel');
+  const counterEl=document.getElementById('counter');
+  const bar=document.getElementById('progress');
+  const hint=document.getElementById('hint');
+  let cur=0, step=0;
+
+  /* tree fields */
+  function rng(seed){let s=seed;return function(){s=(s*9301+49297)%233280;return s/233280}}
+  function trees(el,n,seed,h){
+    const r=rng(seed);
+    for(let i=0;i<n;i++){
+      const w=el.classList.contains('field')?(26+r()*34):(18+r()*10);
+      const ht=el.classList.contains('field')?(h*(0.35+r()*0.65)):(h*(0.5+r()*0.5));
+      const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      s.setAttribute('viewBox','0 0 20 30');s.setAttribute('width',w);s.setAttribute('height',ht);s.setAttribute('preserveAspectRatio','none');
+      s.innerHTML='<use href="#tree"/>';el.appendChild(s);
+    }
+  }
+  document.querySelectorAll('[data-trees]').forEach(el=>{
+    const n=+el.dataset.trees, seed=+el.dataset.seed||1;
+    const h=el.classList.contains('field')?(parseInt(el.style.height)||380):(parseInt(el.style.height)||110);
+    trees(el,n,seed,h);
+  });
+
+  function steps(s){return [...s.querySelectorAll('.step')]}
+  function applySteps(){steps(slides[cur]).forEach((e,k)=>e.classList.toggle('on',k<step))}
+  function noteText(){
+    const n=slides[cur].querySelector('.notes');
+    notesEl.innerHTML='<b>Slide '+(cur+1)+' / '+total+'</b> &nbsp; '+(n?n.innerHTML:'');
+  }
+  function show(i,reveal){
+    i=Math.max(0,Math.min(total-1,i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    cur=i;
+    step=reveal?steps(slides[cur]).length:0;
+    applySteps();
+    partEl.textContent=slides[cur].dataset.part||'';
+    counterEl.textContent=(cur+1)+' / '+total;
+    bar.style.width=((cur+1)/total*100)+'%';
+    noteText();
+    if(location.hash!=='#'+(cur+1)) history.replaceState(null,'','#'+(cur+1));
+  }
+  function next(){const st=steps(slides[cur]);if(step<st.length){step++;applySteps()}else if(cur<total-1)show(cur+1,false)}
+  function prev(){if(step>0){step--;applySteps()}else if(cur>0)show(cur-1,true)}
+
+  function fit(){
+    const s=Math.min(innerWidth/1920,innerHeight/1080);
+    stage.style.transform='translate(-50%,-50%) scale('+s+')';
+  }
+  addEventListener('resize',fit);fit();
+
+  function overview(on){
+    document.body.classList.toggle('overview',on);
+    if(!on){fit();}
+    else{stage.style.transform='';const a=slides[cur];setTimeout(()=>a.scrollIntoView({block:'center'}),30)}
+  }
+
+  slides.forEach((s,k)=>s.addEventListener('click',()=>{
+    if(document.body.classList.contains('overview')){show(k,true);overview(false)}
+  }));
+
+  addEventListener('keydown',e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey)return;
+    const ov=document.body.classList.contains('overview');
+    switch(e.key){
+      case 'ArrowRight':case 'PageDown':case ' ':case 'Enter':e.preventDefault();if(!ov)next();break;
+      case 'ArrowLeft':case 'PageUp':case 'Backspace':e.preventDefault();if(!ov)prev();break;
+      case 'Home':e.preventDefault();show(0,false);break;
+      case 'End':e.preventDefault();show(total-1,true);break;
+      case 'o':case 'O':case 'Escape':overview(e.key==='Escape'?false:!ov);break;
+      case 'n':case 'N':notesEl.classList.toggle('on');break;
+      case 'f':case 'F':if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();break;
+      case '?':hint.style.opacity=1;setTimeout(()=>hint.style.opacity=0,3000);break;
+    }
+  });
+
+  let tx=null;
+  addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60){dx<0?next():prev()}tx=null});
+
+  const h=parseInt((location.hash||'').slice(1),10);
+  show(isNaN(h)?0:h-1,!isNaN(h));
+  setTimeout(()=>hint.style.opacity=0,4500);
+  if(/[?&]print/.test(location.search))document.querySelectorAll('.step').forEach(e=>e.classList.add('on'));
+})();
+</script>
+</body>
+</html>

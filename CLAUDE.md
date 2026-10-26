@@ -2,7 +2,7 @@
 
 ## Goal of this talk
 
-Give working software developers the vocabulary and the diagnostic tools to recognise which of two management systems their team is actually running — and then hand them a concrete structure for the case where a Druckerian group has to work alongside a delivery group that operates on Taylorist lines, as happens in offshore and nearshore arrangements.
+Give working software developers the vocabulary and the diagnostic tools to recognise which of two management systems their team is actually running — and then hand them a concrete structure for the case where a Druckerian group has to work alongside a delivery group that operates on Taylorist lines, as happens whenever work is split between a core group and a delivery group.
 
 Three things the audience should leave with:
 
@@ -30,7 +30,7 @@ The drift is gradient, not malice: input cost is trivially countable and output 
 
 ## Register — important
 
-**Structural, never cultural.** A cultural explanation for offshore behaviour was discussed during research and deliberately excluded. Do not reintroduce it. It is unfalsifiable, it forecloses design, and it is a liability on stage.
+**Structural, never cultural.** A cultural explanation for delivery group behaviour was discussed during research and deliberately excluded. Do not reintroduce it. It is unfalsifiable, it forecloses design, and it is a liability on stage.
 
 **Both profiles get strengths and costs.** This is a hard requirement, not a stylistic preference. If the Taylorist profile reads as a disease and the Druckerian one as a brochure, the talk produces finger-pointing between the two populations in the room — which is the exact dynamic it is trying to dissolve. The Taylorist profile's decisive strength, stated plainly: **it does not depend on exceptional people**, which is why organisations at scale converge on it.
 
@@ -38,7 +38,7 @@ The drift is gradient, not malice: input cost is trivially countable and output 
 
 **Neutral voice.** No first person, no "I watched this happen", despite the material being drawn from direct experience.
 
-The talk is also explicitly not anti-agile, not a methodology pitch, and not a position for or against offshoring.
+The talk is also explicitly not anti-agile, not a methodology pitch, and not a position for or against any particular delivery group arrangement.
 
 ## Premises from the speaker's experience
 
@@ -63,7 +63,7 @@ Provenance: roughly twelve years of development work across several large enterp
 - `Two profiles in a software team.md` — a **practitioner account**, not a neutral field guide. Both profiles with strengths and costs, the degraded-Taylorism framing, split diagnostic/characterisation tables, and a closing section on what happens when both exist in one organisation.
 - `Working structure - core and delivery group.md` — the operating model. Twelve sections, ten Mermaid diagrams. Current and consistent with everything above.
 - `References.md` — framings considered during this work and the reason each was or was not adopted. The test applied is not whether a framing is true but whether it acts on the problems in the working structure. Currently: Forest and Desert (Andres-Beck / Beck), lean. Each entry carries what it describes, why it does not act on these problems, what is worth keeping, a conclusion and sources.
-- `Cases.md` — enterprises outside tech running nearshore arrangements, Belgium-anchored where possible. The test applied is **what is verifiable**: each entry separates published fact from recruitment copy and vendor material. Headline finding: nobody publishes a method, and every organisation reports input (headcount, cities, targets) with no output measure at all — the degraded-Taylorism reading appearing in the public record. Currently: KBC, Euroclear, Ahold Delhaize, Barry Callebaut, Cegeka/Fluvius, ING, Colruyt as counter-example.
+- `Cases.md` — enterprises outside tech running delivery group arrangements, Belgium-anchored where possible. The test applied is **what is verifiable**: each entry separates published fact from recruitment copy and vendor material. Headline finding: nobody publishes a method, and every organisation reports input (headcount, cities, targets) with no output measure at all — the degraded-Taylorism reading appearing in the public record. Currently: KBC, Euroclear, Ahold Delhaize, Barry Callebaut, Cegeka/Fluvius, ING, Colruyt as counter-example.
 - `Talk deck - Taylorism and Druckerism.md` — 59 slides, Marp front matter, speaker notes as HTML comments, timing anchors in the header.
 
 ## Key design decisions
@@ -72,7 +72,7 @@ Three structural choices in `Working structure - core and delivery group.md` tha
 
 **Information is pulled, not pushed.** The interface does not rely on anyone raising a blocker. An open channel with a response SLA is the obvious design and it fails on the "nothing is volunteered" premise — the question is not asked even when the answer is thirty seconds away, because asking has a social cost and guessing does not. The first interface rule is therefore a **scheduled direct solicitation**: a named person asking specific people specific questions on a fixed cadence. Blocking is still encouraged, but the design does not depend on it and is expected to take months to establish. What is being optimised is not round-trip time — the loop is already short — but **silent assumptions**.
 
-**The boundary is dispositional, not geographic.** The design sorts by work class, never by location or employer. Both populations typically sit onshore, sometimes in the same room. Do not let "Class A" become shorthand for "work we send over there" — at that point classification stops being about the work and the conflict the structure prevents returns by another door. Corollary: the structure is worth adopting even if the offshore arrangement ends.
+**The boundary is dispositional, not geographic.** The design sorts by work class, never by location or employer. Both populations typically sit in the same country, sometimes in the same room. Do not let "Class A" become shorthand for "work we send over there" — at that point classification stops being about the work and the conflict the structure prevents returns by another door. Corollary: the structure is worth adopting even if the delivery group arrangement ends.
 
 **The core team does not exist and has to be formed.** Section 11 covers it: drawn from the team already working that way, four to six people, and three things needed on day one — authority to refuse a package, access to production signal, and a named owner for classification. The management conversation about what the core team will *not* be measured on happens before the team starts, not at its first review.
 
@@ -82,7 +82,7 @@ Three structural choices in `Working structure - core and delivery group.md` tha
 
 - It still argues from a **24-hour round trip**. Wrong for this setting — see the one-hour premise above. The argument moves from latency to social reluctance, which makes the framework more necessary rather than less.
 - It still carries **financial-institution / regulated-industry** framing. Should become an illustrative example rather than the speaker's context.
-- It does not carry the **degraded-Taylorism turn**, which is a better pivot into the offshore section than what is there now.
+- It does not carry the **degraded-Taylorism turn**, which is a better pivot into the delivery group section than what is there now.
 - Part 3 presents Taylorism **without strengths**, which conflicts with the register requirement above.
 
 ## Conventions

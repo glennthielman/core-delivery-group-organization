@@ -4,7 +4,7 @@ A working structure for a large enterprise in which a team that defines its own 
 
 The documents here use the working terms *core team* and *delivery group*. They describe the same two halves this project names **stewardship** (holds the context, the access and the authority to change the landscape) and **delivery streams** (execute classified, fully defined work).
 
-A delivery stream is defined by how it works, not by who it is. It can be an offshore or external provider, an internal team, or AI development agents; the structure is the same for all of them.
+A delivery stream is defined by how it works, not by who it is. It can be an external provider, an internal team, or AI development agents; the structure is the same for all of them.
 
 ## The idea
 
